@@ -8,7 +8,7 @@ from scipy import stats
 # -----------------------------
 # Replace 'data.xlsx' with your Excel file path
 # Assume X values are in column 'X' and Y values in column 'Y'
-df = pd.read_excel('Book1.xlsx')  
+df = pd.read_excel('Book4.xlsx')  
 
 x = df['X'].values  # Independent variable
 print("X values:", x)
