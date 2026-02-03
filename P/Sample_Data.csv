@@ -1,0 +1,26 @@
+Year,Total_Assets,Total_Liabilities,Shareholders_Equity,Retained_Earnings,Cash,Inventory,Net_Income
+2022,800000,300000,300000,80000,40000,60000,25000
+2023,900000,350000,450000,120000,50000,70000,40000
+2024,1020000,390000,430000,170000,65000,85000,52000
+2025,950000,420000,630000,230000,80000,95000,68000
+
+
+import pandas as pd
+ 
+ # -----------------------------    
+    # FINANCIAL DATA ANALYSIS   
+    # -----------------------------
+    # 0. IMPORT LIBRARIES
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt     
+import seaborn as sns
+
+
+
+    # -----------------------------
+    # 1. LOAD DATA
+    # -----------------------------
+
+        df = pd.read_csv("Sample_Data.csv")
+        

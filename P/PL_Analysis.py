@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 # -----------------------------
 # 1. LOAD DATA
 # -----------------------------
-file_path = "P/balance_sheet.csv"
+file_path = "P/P/Sample_Data.csv"
 df = pd.read_csv(file_path)
 
 # Sort by year (important for growth calculations)
@@ -65,7 +65,6 @@ if "Net_Income" in df.columns:
         print("✔ Net income positive on average → Company is profitable.")
     else:
         print("⚠ Net income negative → Company is operating at a loss.")
-
 
 # -----------------------------
 # 7. PLOTTING TRENDS
