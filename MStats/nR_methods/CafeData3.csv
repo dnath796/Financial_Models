@@ -1,0 +1,301 @@
+transactionID,waitTime,serviceTime,staffing,timeOfDay,tableTime
+3462,3.6,13.63,Understaffed,Lunch,30.37
+3510,7.35,15.31,Understaffed,Breakfast,38.56
+9717,5.75,8.67,Fully Staffed,Brunch,29.59
+3985,3.67,14.01,Fully Staffed,Lunch,36.75
+2841,4.74,9.46,Fully Staffed,Lunch,36.48
+4370,7.48,7.57,Fully Staffed,Breakfast,29.51
+5760,3.09,14.58,Understaffed,Breakfast,39.84
+7745,6.16,7.99,Fully Staffed,Breakfast,31.1
+3756,4.61,15.47,Understaffed,Lunch,37.64
+6106,2.55,15.7,Understaffed,Lunch,37.63
+3887,6.72,10.71,Fully Staffed,Breakfast,37.17
+7169,4.76,6.76,Fully Staffed,Breakfast,21.75
+3566,8.53,15.66,Understaffed,Brunch,30.13
+3979,4.54,10.62,Fully Staffed,Lunch,33.58
+2613,4.77,10.74,Understaffed,Lunch,30.14
+1554,7.18,17.87,Understaffed,Brunch,38.24
+5468,7.3,11.57,Fully Staffed,Breakfast,35.28
+8788,5.38,21.9,Understaffed,Lunch,45.67
+2046,8.95,15.47,Understaffed,Breakfast,34.16
+8066,5.96,15.14,Understaffed,Breakfast,33.58
+4003,1.75,10.19,Fully Staffed,Lunch,30.56
+4206,7.05,15.21,Understaffed,Brunch,40.53
+8988,4.21,6.3,Fully Staffed,Lunch,28.43
+4994,3.84,9.99,Understaffed,Lunch,37.16
+9357,4.57,14.77,Understaffed,Lunch,34.73
+1216,8.52,8.84,Fully Staffed,Brunch,34.47
+9156,5.22,15.16,Understaffed,Breakfast,39.58
+7215,3.71,8.67,Understaffed,Lunch,31.73
+9779,4.4,7,Fully Staffed,Lunch,29.07
+2598,6.17,7.8,Fully Staffed,Brunch,26.4
+5236,7.14,11.97,Fully Staffed,Brunch,31.42
+4936,4.06,7.8,Fully Staffed,Brunch,28.95
+5088,2.88,8.4,Fully Staffed,Lunch,28.64
+3906,2.67,10.16,Fully Staffed,Lunch,34.88
+1293,5.72,14.03,Understaffed,Brunch,33.48
+9468,4.96,10.29,Fully Staffed,Breakfast,29.94
+1040,6.57,14.61,Fully Staffed,Breakfast,32.19
+9507,7.47,7.75,Fully Staffed,Breakfast,27.06
+8390,5.91,14.08,Understaffed,Brunch,33.74
+7671,4.5,13.45,Understaffed,Breakfast,21.88
+8283,5.44,19.54,Understaffed,Brunch,32.72
+3503,6.38,12.69,Understaffed,Brunch,32.33
+7741,3.76,9.84,Fully Staffed,Lunch,28.51
+9943,4.48,17.36,Understaffed,Lunch,31.36
+9565,3.68,11.82,Understaffed,Lunch,21.86
+7128,1.92,13.31,Fully Staffed,Lunch,31.54
+5611,6.86,11.35,Fully Staffed,Brunch,34.62
+3116,8.78,11.78,Understaffed,Brunch,40.65
+7133,8.79,10.91,Fully Staffed,Brunch,30.72
+1754,3.21,14.36,Understaffed,Lunch,41.83
+7552,2.45,15.94,Understaffed,Lunch,36.36
+6427,6.46,9.82,Fully Staffed,Lunch,30.4
+8126,5.76,12.14,Fully Staffed,Breakfast,33.76
+4357,3.9,7.3,Fully Staffed,Lunch,22.95
+4979,6.63,13.43,Understaffed,Breakfast,33.17
+4229,2.39,9.5,Fully Staffed,Lunch,34.04
+6602,5.91,8.01,Fully Staffed,Brunch,24.26
+5575,3.69,7.92,Fully Staffed,Breakfast,26.31
+4782,4.96,14.95,Understaffed,Breakfast,29.21
+8830,6.18,14.6,Understaffed,Breakfast,36.37
+6966,2.64,4.9,Fully Staffed,Lunch,27.02
+8815,6.88,12.08,Fully Staffed,Breakfast,35.32
+2385,7.43,15.75,Understaffed,Brunch,29.65
+5705,4.64,22.25,Understaffed,Breakfast,42.79
+3377,4.23,11.37,Fully Staffed,Lunch,26.65
+5043,4.75,9.11,Fully Staffed,Lunch,29.11
+1685,5.06,15.59,Fully Staffed,Lunch,42.3
+7077,6.68,23.5,Understaffed,Brunch,40.98
+6026,3.91,7.56,Fully Staffed,Lunch,31.14
+7386,6.87,10.94,Fully Staffed,Brunch,27.19
+8280,8.16,9.58,Fully Staffed,Breakfast,27.19
+5714,5.13,10.37,Fully Staffed,Lunch,32.56
+1150,8.25,15.68,Understaffed,Brunch,32.28
+7809,6.57,7.48,Fully Staffed,Brunch,18.97
+9173,6.56,15.86,Understaffed,Breakfast,42.19
+7910,7.6,13.5,Fully Staffed,Brunch,35.3
+3207,4.44,9.67,Fully Staffed,Breakfast,26.75
+2028,4.41,14.51,Understaffed,Brunch,24.54
+9517,4.64,12.8,Fully Staffed,Lunch,42.31
+8447,2.47,17.7,Understaffed,Lunch,54.65
+8734,7,10.05,Understaffed,Brunch,31.09
+9010,7.38,10.46,Fully Staffed,Brunch,34.71
+2955,6.85,19.96,Understaffed,Breakfast,46.08
+9171,7.28,12.83,Fully Staffed,Brunch,29.32
+6357,3.27,16.26,Understaffed,Lunch,34.5
+6883,8.48,17.16,Understaffed,Brunch,28.52
+5092,5.74,7.61,Fully Staffed,Lunch,23.93
+1984,7.32,15.9,Understaffed,Breakfast,39.01
+7182,4.08,12.14,Understaffed,Brunch,30.69
+1985,5.4,13.63,Understaffed,Lunch,32.56
+5232,5.92,11.87,Fully Staffed,Breakfast,31.31
+2583,7.79,7.73,Fully Staffed,Brunch,18.41
+5684,4.62,15.8,Understaffed,Lunch,39.99
+8863,6.85,16.28,Understaffed,Brunch,29.06
+5775,5.89,15.16,Understaffed,Breakfast,34.12
+7643,5.02,13.64,Fully Staffed,Lunch,31.45
+9912,4.71,7.96,Fully Staffed,Lunch,26.87
+9535,4.99,11.21,Fully Staffed,Lunch,38.51
+8477,9.57,9.82,Fully Staffed,Breakfast,26.91
+3506,4.66,9.48,Fully Staffed,Lunch,25.56
+1194,7.31,10.93,Fully Staffed,Brunch,23.33
+4123,3.68,7.96,Fully Staffed,Brunch,23.93
+7677,11.04,11.06,Understaffed,Brunch,25.23
+5649,3.52,13.52,Understaffed,Lunch,35.56
+3131,9.56,20.26,Understaffed,Breakfast,35.94
+4463,6.56,15.17,Understaffed,Breakfast,36.69
+4948,9.31,10.66,Fully Staffed,Brunch,29.93
+8756,6.84,9.62,Fully Staffed,Brunch,22.45
+3757,4.51,16.41,Understaffed,Lunch,32.46
+4832,7.32,12.14,Understaffed,Brunch,36.57
+1711,6.72,12.32,Fully Staffed,Brunch,36.84
+6369,5.82,16.75,Understaffed,Breakfast,46.78
+4500,5.01,12.58,Understaffed,Lunch,32.56
+4068,5.7,15.16,Understaffed,Breakfast,27.68
+9719,1.96,17.15,Understaffed,Lunch,33.31
+5054,3.8,11.12,Fully Staffed,Lunch,33.16
+1472,4.54,19.45,Understaffed,Lunch,48.95
+7097,4.62,13.16,Understaffed,Lunch,33.71
+2148,7.92,12.23,Fully Staffed,Brunch,37.93
+3036,4.46,18.11,Understaffed,Brunch,41.95
+3312,6.55,9.68,Fully Staffed,Breakfast,23.84
+8740,7.45,8.05,Fully Staffed,Breakfast,27.19
+9649,5.28,11.73,Understaffed,Lunch,38.26
+2077,6.66,16.37,Understaffed,Brunch,40.75
+6014,5.52,14.79,Understaffed,Breakfast,37.11
+6657,9.23,13.56,Fully Staffed,Brunch,35.95
+7378,4.5,11.07,Fully Staffed,Brunch,28.61
+2312,6.34,9.26,Fully Staffed,Brunch,22.66
+1184,6.69,7.95,Fully Staffed,Breakfast,34.43
+8932,2.38,13.25,Understaffed,Lunch,26.15
+1412,4.28,16.03,Understaffed,Lunch,31.34
+5722,9.82,13.65,Understaffed,Brunch,36.79
+2332,6.99,16.54,Understaffed,Brunch,30.23
+5874,6.58,9.33,Fully Staffed,Brunch,26.57
+1563,6.71,14.68,Understaffed,Breakfast,28.77
+4798,3.72,12.81,Understaffed,Lunch,35.91
+5255,7.22,13.81,Fully Staffed,Breakfast,36.04
+4580,8.36,10.67,Fully Staffed,Brunch,32.78
+4128,4,10.46,Fully Staffed,Lunch,32.67
+7600,4.23,6.62,Fully Staffed,Breakfast,29.41
+5712,4.02,11.32,Fully Staffed,Breakfast,34.52
+9548,6.11,7.95,Fully Staffed,Brunch,18.11
+1278,4.8,8.22,Fully Staffed,Lunch,27.48
+5365,3.06,11.84,Fully Staffed,Breakfast,32.4
+7789,4.17,13.64,Understaffed,Brunch,37.26
+7490,5.02,9.75,Understaffed,Breakfast,23.81
+4200,6.59,13.54,Fully Staffed,Breakfast,31.04
+3265,3.09,5.25,Fully Staffed,Lunch,19.88
+1617,4.89,11.15,Fully Staffed,Lunch,36.44
+2904,4.33,18.05,Understaffed,Lunch,44.45
+9528,3.83,13.11,Understaffed,Lunch,37.05
+1538,4.82,10.89,Fully Staffed,Lunch,24.78
+4624,7.58,10.88,Fully Staffed,Brunch,33.14
+7867,3.55,18.12,Understaffed,Lunch,43.87
+4461,7.35,16.45,Understaffed,Brunch,37.29
+6617,4.65,9.51,Fully Staffed,Lunch,26.68
+7814,7.53,17.75,Understaffed,Brunch,32.32
+8004,3.34,17.4,Understaffed,Lunch,34.07
+7800,8.28,8.13,Fully Staffed,Brunch,31.7
+4007,8.73,10.8,Understaffed,Brunch,28.64
+7803,4.28,10.32,Fully Staffed,Lunch,31.46
+3210,7.22,9.45,Fully Staffed,Brunch,35.92
+3285,5.89,12.04,Understaffed,Breakfast,34.93
+6792,6.16,10.17,Fully Staffed,Lunch,36.99
+8683,6.41,7.36,Fully Staffed,Breakfast,18.85
+9935,3.84,15.48,Understaffed,Lunch,34.08
+6508,3.24,13.13,Understaffed,Brunch,33.46
+5212,3.65,17.87,Understaffed,Breakfast,40.76
+8825,5.88,22.27,Understaffed,Breakfast,36.42
+2705,4.21,8.17,Fully Staffed,Lunch,32.2
+8878,6.42,18.17,Understaffed,Breakfast,39.71
+9080,8.23,17.48,Understaffed,Brunch,38.8
+1987,3.81,9.86,Fully Staffed,Lunch,32.4
+9977,5.21,13.64,Understaffed,Lunch,33.06
+5806,5.62,19.73,Understaffed,Brunch,44.36
+6587,5.19,5.99,Fully Staffed,Brunch,29.23
+4808,5.16,13.07,Understaffed,Brunch,32.32
+8425,4.74,7.13,Fully Staffed,Lunch,32.33
+3224,3.92,19.19,Understaffed,Lunch,40.65
+2164,4.79,9.62,Fully Staffed,Lunch,32.96
+7082,6.6,13.43,Understaffed,Brunch,30.46
+8633,5.11,24.55,Understaffed,Breakfast,52.45
+3212,3.63,14.85,Understaffed,Lunch,34.83
+2611,2.15,9.11,Fully Staffed,Lunch,33.35
+4852,2.83,10.6,Fully Staffed,Lunch,30.1
+6564,2.56,6.86,Fully Staffed,Lunch,25.46
+1709,5.05,10.98,Fully Staffed,Lunch,34.9
+9041,3.4,9.81,Fully Staffed,Lunch,21.89
+2257,7.18,10.94,Fully Staffed,Breakfast,33.33
+3469,8.27,12.05,Understaffed,Breakfast,34.02
+3111,5.71,11.93,Understaffed,Breakfast,18.45
+7223,6.43,12.92,Understaffed,Breakfast,34.76
+4034,3.37,12.7,Understaffed,Breakfast,21.86
+3338,5.77,12.6,Fully Staffed,Brunch,35.9
+7908,6.08,13.16,Fully Staffed,Breakfast,30.89
+2346,7.45,14.53,Understaffed,Brunch,31.06
+7622,5.86,9.28,Fully Staffed,Brunch,29.25
+8727,6.68,14.01,Understaffed,Lunch,40.88
+6000,3.54,10.14,Fully Staffed,Lunch,26.96
+6406,6.1,10.19,Fully Staffed,Breakfast,32.98
+6853,7.97,15.87,Understaffed,Brunch,37.58
+5387,6.96,12.76,Understaffed,Brunch,26.86
+6345,5.03,12.46,Understaffed,Breakfast,23.75
+2707,5.05,18.59,Understaffed,Lunch,28.63
+5700,5.62,8.9,Fully Staffed,Lunch,31.66
+2834,6.96,10.61,Fully Staffed,Brunch,30.44
+4110,6.84,9.89,Fully Staffed,Breakfast,39.14
+7308,3.9,12.13,Understaffed,Lunch,35
+9928,8.52,16.77,Understaffed,Brunch,41.02
+9274,4.27,10.35,Fully Staffed,Breakfast,37.02
+4467,6.32,19.2,Understaffed,Lunch,36.7
+8376,6.09,15.35,Understaffed,Brunch,37.9
+5171,4.81,14.01,Understaffed,Brunch,38.35
+6213,6.47,15.83,Understaffed,Brunch,42.68
+8384,7.22,11.44,Understaffed,Brunch,35.25
+8089,9.44,12.49,Understaffed,Brunch,34.6
+7517,7.37,16.53,Understaffed,Breakfast,32.19
+3162,6.21,14,Understaffed,Breakfast,37.65
+6496,2.61,14.8,Understaffed,Lunch,37.3
+8632,4.7,14.65,Understaffed,Breakfast,37.82
+1681,5.76,8.7,Fully Staffed,Breakfast,30.82
+8081,6.55,8.94,Understaffed,Lunch,27.93
+2561,3.21,16.05,Understaffed,Breakfast,35.67
+7540,8.7,11.52,Fully Staffed,Brunch,34.96
+4813,3.47,7.42,Fully Staffed,Lunch,28.28
+5051,5.67,19.45,Understaffed,Lunch,35.3
+9175,5.29,10.77,Fully Staffed,Brunch,29.32
+6566,7.22,19.02,Understaffed,Brunch,32.42
+2361,4.35,8.09,Fully Staffed,Breakfast,23.25
+3153,4.9,10.33,Fully Staffed,Lunch,29.61
+4958,5.48,14.7,Understaffed,Lunch,25.71
+7154,8.93,17.31,Understaffed,Breakfast,28.87
+5720,4.8,13.27,Understaffed,Lunch,38.78
+1385,8.76,9.98,Fully Staffed,Breakfast,27.1
+9332,7.87,6.44,Fully Staffed,Breakfast,17.18
+1030,6.8,8.44,Fully Staffed,Brunch,27.88
+5189,6.72,15.38,Understaffed,Breakfast,41.99
+4785,4.54,8.59,Fully Staffed,Breakfast,31.9
+8587,5.72,9.91,Fully Staffed,Breakfast,32.12
+9369,7.83,9.06,Fully Staffed,Breakfast,34.98
+6531,6.81,16.82,Understaffed,Breakfast,32.96
+5619,6.69,18.51,Understaffed,Breakfast,42.16
+6697,2.96,12.53,Understaffed,Lunch,29.59
+1203,3.4,14.08,Understaffed,Lunch,34.08
+4246,4.85,12.88,Fully Staffed,Breakfast,43.95
+3420,6.59,8.4,Understaffed,Breakfast,33.25
+9855,3.01,9.36,Fully Staffed,Lunch,33.2
+8631,7.84,21.19,Understaffed,Brunch,35.65
+3431,5.33,14.39,Fully Staffed,Brunch,30.46
+6241,5.83,10.31,Fully Staffed,Lunch,41.73
+8566,4.46,8.27,Fully Staffed,Lunch,22.8
+3362,5.95,10.33,Fully Staffed,Brunch,31.4
+1258,4.24,8.69,Fully Staffed,Lunch,33.15
+6984,3.65,19.36,Understaffed,Lunch,44.45
+6408,6.56,12.58,Understaffed,Breakfast,38.03
+8215,7.37,10.75,Fully Staffed,Brunch,29.93
+2324,5.48,11.24,Fully Staffed,Brunch,27.14
+5105,5.81,8.48,Fully Staffed,Brunch,26.94
+5265,7.45,17.55,Understaffed,Brunch,33.04
+4351,8.46,8.5,Fully Staffed,Breakfast,31.64
+8515,7.63,16.89,Understaffed,Breakfast,42.49
+5070,6.06,12.19,Fully Staffed,Brunch,42.83
+3449,8.24,12.03,Understaffed,Brunch,33.86
+2232,5.93,18.32,Understaffed,Breakfast,33.95
+2672,4.3,13.53,Understaffed,Lunch,38.65
+4466,6.39,15.88,Understaffed,Breakfast,40.4
+5356,6.58,10.4,Fully Staffed,Lunch,29.21
+3588,2.81,9.15,Fully Staffed,Lunch,21.36
+7469,7.15,10.54,Fully Staffed,Brunch,34.35
+6193,2.22,7.54,Fully Staffed,Lunch,33.19
+3329,4.59,14.59,Understaffed,Lunch,33.11
+2608,5.1,11.65,Fully Staffed,Lunch,34.33
+4338,8.17,8.48,Understaffed,Breakfast,27.1
+7006,2.07,10.54,Understaffed,Lunch,33.95
+6381,6.62,7.68,Fully Staffed,Breakfast,27.09
+2759,5.59,10.23,Understaffed,Lunch,28.51
+9756,5.38,16.26,Understaffed,Breakfast,36.82
+6338,5.68,8.01,Fully Staffed,Breakfast,26.59
+7839,6.95,8.51,Understaffed,Brunch,25.55
+4423,7.55,8.72,Fully Staffed,Brunch,27.14
+6085,7,13.83,Understaffed,Breakfast,33.79
+5547,7.98,17.57,Understaffed,Breakfast,38.61
+2947,5.86,11.69,Understaffed,Breakfast,39.35
+6698,4.2,12.32,Fully Staffed,Lunch,25.53
+2959,9.73,10.8,Fully Staffed,Breakfast,29.8
+1645,6.65,16.09,Understaffed,Breakfast,39.25
+2059,7.28,12.44,Understaffed,Brunch,41.25
+4126,3.99,13.91,Fully Staffed,Breakfast,36.04
+2263,6,9.67,Fully Staffed,Breakfast,29.6
+5083,3.78,6.35,Fully Staffed,Lunch,24.81
+4081,6.98,9.59,Fully Staffed,Brunch,31.66
+4493,3.42,9.2,Understaffed,Lunch,34.15
+6731,5.97,9.38,Fully Staffed,Brunch,28.46
+2203,3.28,9.16,Fully Staffed,Lunch,29.98
+5373,5.68,11.36,Fully Staffed,Breakfast,32.44
+9432,9.05,18.03,Understaffed,Brunch,41.68
+5119,8.57,8.55,Fully Staffed,Brunch,34.11
+7822,6.46,11.61,Fully Staffed,Brunch,33.01
+8726,4.47,19.27,Understaffed,Brunch,38.89
+9123,5.73,8.43,Fully Staffed,Brunch,35.4
