@@ -1,0 +1,301 @@
+transactionID,age,gender,occupation,visitFrequency,averageSpendPerVisit,howHeardAboutCafe,socialMediaPlatform,customerSatisfactionRating,likelihoodToRecommend,referredOthers,numberOfReferralsMade,attendedSpecialEvents,responseToPromotions
+3368,65,Non-binary,Professional,Daily,45.58,Newspaper,TikTok,3,10,No,2,No,Specialty Drinks
+6272,43,Female,Retired,Monthly,41.88,Word of Mouth,Instagram,3,1,No,4,No,Discounts
+2251,29,Male,Professional,Monthly,27.45,Social Media,Twitter,7,8,Yes,0,Yes,Loyalty Rewards
+9825,27,Non-binary,Professional,Monthly,37.78,Social Media,Twitter,6,1,No,0,No,None
+1355,63,Female,Student,Monthly,40.14,Word of Mouth,Facebook,9,10,Yes,2,No,None
+8699,60,Female,Other,Weekly,17.23,Newspaper,Twitter,2,7,No,1,No,None
+4953,40,Female,Student,Weekly,37.16,Social Media,Instagram,5,4,No,1,No,None
+6402,44,Male,Other,First-time,30.71,Flyers,None,6,3,Yes,0,Yes,Loyalty Rewards
+1931,51,Male,Student,Monthly,45.12,Word of Mouth,Twitter,9,10,No,0,Yes,None
+6636,33,Female,Professional,Monthly,6.27,Newspaper,Instagram,10,9,No,3,No,None
+5001,63,Male,Student,Monthly,35.55,Social Media,Twitter,7,6,Yes,3,No,Discounts
+1258,42,Non-binary,Professional,Weekly,36.16,Word of Mouth,None,8,2,Yes,4,Yes,Specialty Drinks
+6433,45,Female,Student,First-time,30.7,Flyers,None,1,9,No,3,No,Specialty Drinks
+1480,32,Prefer not to say,Retired,Daily,42.52,Flyers,Twitter,1,4,Yes,2,No,Discounts
+8325,55,Prefer not to say,Retired,Daily,18.27,Flyers,TikTok,9,8,No,3,Yes,None
+9490,40,Non-binary,Other,Daily,13.58,Word of Mouth,Instagram,6,1,Yes,0,No,Discounts
+3453,36,Non-binary,Other,Weekly,12.61,Word of Mouth,Instagram,5,7,Yes,2,No,Loyalty Rewards
+8788,27,Female,Professional,Daily,5.74,Newspaper,None,5,7,No,3,Yes,None
+6467,30,Female,Student,Weekly,10.16,Social Media,Twitter,7,7,No,2,No,None
+7340,55,Non-binary,Other,Monthly,7.88,Social Media,Instagram,5,9,No,3,Yes,Discounts
+3273,18,Non-binary,Retired,Monthly,41.25,Social Media,Twitter,10,2,Yes,0,Yes,Specialty Drinks
+3551,28,Male,Professional,Weekly,10.98,Newspaper,Facebook,10,6,No,3,No,None
+1726,62,Prefer not to say,Other,Weekly,9.06,Word of Mouth,None,10,2,No,4,No,Discounts
+1944,43,Female,Student,First-time,45.17,Flyers,TikTok,5,5,Yes,0,No,None
+1625,27,Male,Retired,First-time,38.02,Flyers,None,9,9,Yes,4,Yes,Loyalty Rewards
+5357,62,Male,Student,Weekly,27.56,Social Media,Instagram,9,4,No,2,Yes,Loyalty Rewards
+7533,32,Non-binary,Retired,Weekly,17.45,Social Media,Facebook,3,6,Yes,3,No,Discounts
+2395,34,Female,Student,Weekly,9.86,Word of Mouth,Twitter,2,1,Yes,2,No,None
+6122,64,Male,Student,Monthly,43.12,Flyers,Instagram,4,10,No,1,No,None
+3817,25,Non-binary,Student,Daily,36.99,Social Media,Facebook,7,7,Yes,1,Yes,Specialty Drinks
+1516,53,Non-binary,Professional,First-time,41.24,Flyers,Twitter,8,9,Yes,0,Yes,Discounts
+9224,23,Male,Other,First-time,5.65,Flyers,TikTok,3,8,No,3,Yes,None
+1944,27,Prefer not to say,Retired,Monthly,16.41,Word of Mouth,Twitter,1,6,Yes,2,No,None
+1102,44,Non-binary,Professional,Weekly,23.11,Newspaper,Facebook,9,6,Yes,4,Yes,Loyalty Rewards
+6347,37,Male,Professional,Weekly,19.92,Word of Mouth,Twitter,5,2,Yes,3,Yes,Loyalty Rewards
+8145,42,Non-binary,Student,Daily,44.02,Newspaper,Twitter,1,1,No,1,Yes,None
+2692,41,Male,Professional,First-time,12.87,Social Media,Twitter,3,8,Yes,3,Yes,None
+5171,33,Non-binary,Professional,Monthly,21.48,Word of Mouth,TikTok,2,1,No,1,Yes,Loyalty Rewards
+6896,61,Non-binary,Professional,Daily,6.25,Social Media,Twitter,4,2,No,3,No,Discounts
+6610,33,Female,Retired,Daily,45.69,Word of Mouth,Instagram,8,10,Yes,3,No,Loyalty Rewards
+4618,20,Male,Retired,Weekly,42.85,Word of Mouth,Instagram,7,1,Yes,3,No,Specialty Drinks
+1015,49,Female,Retired,First-time,48.37,Newspaper,TikTok,3,1,Yes,1,No,Discounts
+6444,38,Prefer not to say,Professional,Weekly,32.72,Social Media,Facebook,9,1,Yes,0,Yes,Specialty Drinks
+1987,56,Prefer not to say,Other,Monthly,10.46,Social Media,Facebook,10,4,Yes,2,No,Discounts
+8809,20,Male,Other,First-time,46.64,Social Media,Instagram,2,6,Yes,2,Yes,None
+9273,27,Female,Retired,First-time,10.61,Newspaper,Twitter,7,3,No,4,No,Specialty Drinks
+3343,38,Prefer not to say,Professional,First-time,30.02,Flyers,None,5,5,Yes,2,Yes,Discounts
+1148,59,Prefer not to say,Professional,Weekly,13.11,Newspaper,Twitter,7,2,No,0,No,Specialty Drinks
+8139,24,Prefer not to say,Student,Monthly,49.47,Flyers,Instagram,10,2,Yes,1,No,Specialty Drinks
+6688,36,Female,Student,Weekly,36.57,Flyers,TikTok,6,8,Yes,0,No,None
+1099,46,Female,Professional,Weekly,16.46,Social Media,Instagram,6,1,No,2,No,Loyalty Rewards
+3345,62,Female,Professional,First-time,40.92,Word of Mouth,Twitter,3,9,Yes,3,No,Specialty Drinks
+3449,59,Female,Retired,First-time,21.84,Social Media,None,9,4,No,2,Yes,Loyalty Rewards
+1090,63,Non-binary,Retired,Daily,44.9,Flyers,Twitter,1,6,No,3,Yes,Loyalty Rewards
+7924,41,Female,Professional,Daily,11.14,Flyers,None,1,9,Yes,2,Yes,Loyalty Rewards
+8348,46,Prefer not to say,Student,Daily,45.64,Social Media,Instagram,4,10,No,2,No,Specialty Drinks
+6173,47,Male,Student,Monthly,45.61,Word of Mouth,Instagram,8,2,No,2,Yes,None
+7994,60,Female,Professional,First-time,43.65,Newspaper,Twitter,9,8,Yes,1,No,Discounts
+5815,62,Non-binary,Retired,Weekly,28.94,Flyers,Facebook,7,8,No,1,Yes,None
+6877,52,Male,Other,Weekly,42.19,Flyers,TikTok,5,1,Yes,1,No,Discounts
+7781,59,Prefer not to say,Retired,Daily,47.08,Newspaper,TikTok,7,5,Yes,1,No,Discounts
+9618,51,Non-binary,Retired,Daily,30.42,Flyers,Twitter,9,8,No,2,Yes,None
+7585,56,Female,Professional,Weekly,22.75,Flyers,Instagram,2,4,No,3,No,Discounts
+6231,38,Prefer not to say,Retired,Weekly,13.43,Flyers,Twitter,9,3,No,2,Yes,Specialty Drinks
+5679,60,Prefer not to say,Other,Monthly,44.76,Social Media,Instagram,3,4,Yes,2,No,Discounts
+8452,60,Prefer not to say,Other,First-time,15.52,Newspaper,Twitter,1,1,No,3,No,Specialty Drinks
+1950,43,Non-binary,Retired,Daily,47.49,Social Media,Twitter,10,7,No,1,No,Discounts
+9101,50,Female,Student,Daily,34.62,Social Media,None,6,5,Yes,2,Yes,Discounts
+6260,23,Male,Other,Daily,12.18,Social Media,TikTok,9,3,No,2,No,None
+2924,40,Female,Other,Monthly,47.92,Social Media,None,9,5,Yes,4,No,Loyalty Rewards
+5406,59,Male,Retired,Daily,11.99,Newspaper,Instagram,4,5,Yes,3,No,Loyalty Rewards
+3858,58,Male,Student,Daily,48.02,Newspaper,Twitter,9,10,Yes,0,No,None
+5855,61,Male,Professional,Monthly,34.36,Word of Mouth,Twitter,7,9,No,4,No,Loyalty Rewards
+2888,62,Prefer not to say,Student,Weekly,6.22,Newspaper,None,3,4,Yes,1,No,Discounts
+2692,35,Prefer not to say,Retired,Monthly,24.03,Social Media,Facebook,5,4,No,4,No,Loyalty Rewards
+2906,64,Female,Student,Daily,14.1,Newspaper,Instagram,7,9,No,1,Yes,Specialty Drinks
+9894,38,Prefer not to say,Retired,Weekly,32.9,Newspaper,None,4,8,Yes,3,No,Loyalty Rewards
+4309,50,Male,Professional,Daily,46.49,Word of Mouth,Twitter,4,10,No,0,Yes,Loyalty Rewards
+7669,28,Female,Other,Monthly,30.96,Flyers,Facebook,9,5,No,1,No,Discounts
+3309,57,Female,Other,Weekly,11.46,Flyers,TikTok,4,9,Yes,4,No,Specialty Drinks
+5394,62,Non-binary,Professional,Monthly,21.43,Newspaper,TikTok,4,5,No,4,Yes,Discounts
+8613,31,Female,Other,Daily,7.4,Newspaper,Facebook,7,2,Yes,4,Yes,Discounts
+9945,19,Male,Other,Weekly,10.2,Newspaper,TikTok,10,3,Yes,3,Yes,Specialty Drinks
+5894,55,Prefer not to say,Student,Weekly,37.66,Word of Mouth,Facebook,8,7,Yes,1,Yes,Discounts
+7049,62,Prefer not to say,Student,First-time,12.57,Flyers,Twitter,5,9,Yes,1,No,Loyalty Rewards
+3909,52,Non-binary,Retired,Daily,48.13,Newspaper,TikTok,5,4,No,1,No,Loyalty Rewards
+2247,45,Male,Professional,Daily,7.72,Word of Mouth,None,2,6,No,4,No,Specialty Drinks
+8381,62,Prefer not to say,Professional,First-time,48.81,Flyers,Facebook,10,5,Yes,3,Yes,Discounts
+5389,33,Female,Retired,Weekly,27.15,Social Media,TikTok,10,8,No,1,No,Specialty Drinks
+1606,33,Non-binary,Professional,Weekly,36.63,Word of Mouth,None,5,9,Yes,3,No,None
+3830,62,Prefer not to say,Other,Monthly,37.57,Social Media,Facebook,7,6,No,1,No,Specialty Drinks
+9737,62,Non-binary,Retired,Daily,39.39,Flyers,None,4,1,No,0,No,Discounts
+3473,25,Non-binary,Student,Monthly,44.57,Social Media,Facebook,9,10,No,2,Yes,Discounts
+3235,62,Male,Other,Weekly,37.05,Newspaper,TikTok,8,3,Yes,2,Yes,Discounts
+9445,55,Prefer not to say,Retired,First-time,16.03,Flyers,None,5,6,No,1,No,Loyalty Rewards
+9459,55,Prefer not to say,Other,First-time,27.18,Word of Mouth,None,6,2,Yes,3,Yes,Specialty Drinks
+5735,25,Male,Professional,First-time,39.09,Newspaper,Instagram,2,6,Yes,4,No,Loyalty Rewards
+4481,48,Female,Professional,Daily,5.02,Social Media,TikTok,1,3,Yes,2,No,Loyalty Rewards
+3088,54,Prefer not to say,Student,First-time,8.77,Social Media,Facebook,4,10,Yes,4,No,Discounts
+8360,40,Male,Student,Weekly,39.95,Flyers,None,2,1,No,0,No,None
+9855,58,Non-binary,Student,First-time,18.21,Social Media,Instagram,5,10,No,4,No,Loyalty Rewards
+2121,27,Prefer not to say,Student,First-time,20.65,Newspaper,Facebook,10,2,No,2,No,Specialty Drinks
+7680,28,Prefer not to say,Student,First-time,34.21,Social Media,Twitter,6,7,No,4,No,Discounts
+1161,44,Prefer not to say,Professional,First-time,42.97,Flyers,Facebook,6,8,No,0,No,None
+1635,40,Prefer not to say,Other,Daily,8.11,Word of Mouth,None,10,10,No,3,Yes,Loyalty Rewards
+3753,50,Non-binary,Retired,Daily,16.94,Newspaper,Facebook,3,10,No,3,No,Loyalty Rewards
+6663,39,Male,Student,Monthly,36.96,Flyers,Instagram,1,3,No,4,No,None
+4994,32,Prefer not to say,Retired,Weekly,7.3,Word of Mouth,TikTok,9,9,Yes,1,No,Loyalty Rewards
+6816,21,Non-binary,Other,Monthly,20.1,Flyers,Twitter,4,5,No,4,No,None
+5891,56,Non-binary,Other,Monthly,45.21,Social Media,None,5,4,No,2,Yes,Discounts
+7773,60,Female,Student,Monthly,15.26,Word of Mouth,None,5,3,No,1,No,Discounts
+4108,27,Male,Retired,Weekly,30.74,Word of Mouth,Facebook,6,9,No,0,Yes,Loyalty Rewards
+3820,25,Prefer not to say,Other,Monthly,13.6,Word of Mouth,TikTok,5,2,No,3,No,None
+5173,48,Non-binary,Other,Weekly,49.99,Word of Mouth,TikTok,8,5,Yes,1,No,Specialty Drinks
+5621,45,Non-binary,Professional,Monthly,27.58,Flyers,TikTok,10,3,No,4,No,Discounts
+4739,52,Non-binary,Retired,Monthly,41.9,Word of Mouth,Facebook,5,6,Yes,2,Yes,Specialty Drinks
+4168,62,Prefer not to say,Student,Monthly,33.67,Social Media,TikTok,9,3,No,4,No,None
+7626,37,Male,Retired,Monthly,43.38,Social Media,Twitter,10,9,Yes,3,Yes,Loyalty Rewards
+4545,65,Male,Student,Daily,35.92,Flyers,Twitter,10,1,Yes,4,No,Discounts
+2150,25,Prefer not to say,Other,First-time,39.99,Word of Mouth,Twitter,8,7,Yes,1,Yes,None
+4564,49,Non-binary,Student,Monthly,11.6,Social Media,None,1,7,No,2,Yes,Discounts
+6674,20,Non-binary,Retired,Monthly,17.29,Flyers,Instagram,2,4,Yes,3,No,Loyalty Rewards
+8859,58,Prefer not to say,Other,Daily,16.72,Social Media,Facebook,10,2,No,3,No,None
+4577,65,Non-binary,Other,Monthly,21,Word of Mouth,Twitter,9,5,Yes,4,No,None
+5432,28,Non-binary,Retired,First-time,16.74,Flyers,Twitter,8,6,Yes,1,No,Discounts
+5026,30,Male,Retired,Weekly,43.49,Newspaper,Twitter,7,5,No,0,Yes,Discounts
+5634,56,Non-binary,Student,First-time,38.07,Social Media,Instagram,8,6,No,4,Yes,Specialty Drinks
+4251,35,Female,Other,Daily,43.44,Social Media,TikTok,7,2,Yes,3,Yes,None
+6520,56,Female,Retired,Daily,38.04,Flyers,Facebook,10,10,Yes,4,No,Discounts
+2292,38,Male,Other,Monthly,37.4,Social Media,Twitter,1,7,No,0,No,None
+3014,22,Male,Professional,Monthly,49.25,Flyers,Facebook,9,6,Yes,3,Yes,Specialty Drinks
+2405,48,Male,Retired,Weekly,12.29,Social Media,None,3,10,No,3,Yes,Specialty Drinks
+4195,37,Female,Professional,Daily,39.48,Newspaper,Facebook,10,6,Yes,1,Yes,Loyalty Rewards
+8230,35,Male,Student,Weekly,47.93,Newspaper,Instagram,8,4,No,0,Yes,Specialty Drinks
+3608,56,Prefer not to say,Professional,Daily,16.97,Social Media,Twitter,1,9,No,1,Yes,Specialty Drinks
+5668,20,Female,Other,Monthly,8.86,Word of Mouth,Twitter,8,5,No,4,No,Discounts
+8795,65,Female,Student,Daily,15.3,Newspaper,TikTok,10,1,No,4,No,Specialty Drinks
+9080,25,Male,Retired,Weekly,19.96,Flyers,TikTok,4,4,No,2,Yes,Loyalty Rewards
+5000,36,Non-binary,Student,Monthly,47.83,Social Media,None,10,8,Yes,3,Yes,None
+1001,27,Female,Retired,Monthly,49.55,Word of Mouth,None,9,3,Yes,4,Yes,Specialty Drinks
+9862,32,Prefer not to say,Retired,Daily,24.73,Flyers,None,3,9,No,3,No,Discounts
+8815,29,Male,Retired,First-time,36.5,Social Media,TikTok,8,10,No,2,Yes,Loyalty Rewards
+9962,52,Non-binary,Student,Monthly,45.01,Newspaper,Facebook,8,4,No,3,No,Loyalty Rewards
+9932,65,Female,Student,Weekly,42.54,Word of Mouth,TikTok,2,7,Yes,1,No,Loyalty Rewards
+3316,49,Male,Professional,First-time,38.05,Word of Mouth,Instagram,9,10,Yes,2,Yes,Loyalty Rewards
+9896,59,Non-binary,Student,Weekly,34.11,Flyers,None,3,9,Yes,0,Yes,Loyalty Rewards
+9861,51,Female,Retired,Daily,42.93,Newspaper,Twitter,4,7,Yes,1,Yes,Loyalty Rewards
+6682,57,Prefer not to say,Professional,First-time,12.18,Newspaper,Twitter,5,5,No,2,No,Loyalty Rewards
+5539,18,Non-binary,Professional,Weekly,21.37,Word of Mouth,Instagram,4,9,No,3,No,Specialty Drinks
+8726,30,Female,Student,Daily,17.38,Newspaper,None,10,3,Yes,4,No,None
+4269,24,Male,Other,First-time,10.62,Newspaper,None,5,2,No,3,Yes,None
+6129,28,Male,Student,Daily,30.45,Word of Mouth,Twitter,4,1,Yes,4,Yes,Specialty Drinks
+2224,28,Non-binary,Retired,First-time,35.3,Newspaper,Instagram,5,5,No,3,No,Discounts
+6864,30,Female,Retired,Weekly,5.08,Newspaper,Twitter,6,6,No,1,No,Discounts
+2944,54,Prefer not to say,Student,First-time,41.04,Word of Mouth,None,2,3,Yes,4,No,Loyalty Rewards
+8682,51,Prefer not to say,Professional,Weekly,13.92,Word of Mouth,Twitter,1,3,No,1,Yes,Specialty Drinks
+5276,32,Prefer not to say,Professional,Monthly,35,Newspaper,TikTok,6,10,Yes,0,No,Loyalty Rewards
+9942,54,Non-binary,Retired,First-time,40.45,Social Media,TikTok,1,9,Yes,1,Yes,None
+6403,31,Female,Student,Daily,47.85,Newspaper,TikTok,7,9,No,2,No,None
+6883,54,Female,Other,Monthly,22.22,Newspaper,Facebook,10,5,Yes,0,No,Loyalty Rewards
+1462,43,Prefer not to say,Student,Weekly,28.69,Newspaper,TikTok,8,3,No,1,No,Loyalty Rewards
+7748,45,Male,Professional,Daily,22.48,Social Media,Instagram,5,8,No,4,Yes,Loyalty Rewards
+3131,35,Female,Student,First-time,10.93,Newspaper,Facebook,8,7,Yes,4,Yes,Discounts
+4957,34,Non-binary,Retired,First-time,41.35,Social Media,Facebook,7,7,No,4,Yes,None
+6079,56,Prefer not to say,Student,Weekly,35.88,Social Media,Twitter,1,1,No,1,No,Loyalty Rewards
+9416,62,Non-binary,Professional,Daily,18.19,Word of Mouth,None,7,3,No,2,Yes,Discounts
+5584,51,Non-binary,Student,First-time,23.9,Flyers,Twitter,8,2,No,2,No,Specialty Drinks
+4733,29,Male,Retired,Daily,38.09,Flyers,Instagram,5,10,No,0,Yes,None
+8065,47,Non-binary,Other,Daily,43.24,Newspaper,Facebook,8,9,No,0,No,Discounts
+7099,52,Prefer not to say,Other,First-time,8.49,Newspaper,None,1,9,Yes,3,No,Specialty Drinks
+4070,37,Female,Professional,Monthly,17.77,Flyers,TikTok,1,5,Yes,3,No,Discounts
+2953,43,Prefer not to say,Student,First-time,9.94,Flyers,Instagram,4,1,Yes,4,No,Specialty Drinks
+5248,42,Female,Student,First-time,14.99,Social Media,TikTok,2,1,Yes,4,Yes,Discounts
+8104,25,Prefer not to say,Other,Monthly,7.12,Newspaper,None,7,2,No,0,No,Loyalty Rewards
+7029,37,Non-binary,Retired,First-time,7.74,Word of Mouth,Facebook,5,7,Yes,0,No,None
+1048,45,Prefer not to say,Retired,Monthly,29.01,Social Media,TikTok,7,5,No,4,Yes,Discounts
+1155,63,Non-binary,Professional,Daily,9.42,Flyers,None,7,8,Yes,0,No,Specialty Drinks
+3217,50,Male,Retired,Daily,23.83,Social Media,TikTok,9,8,Yes,4,Yes,None
+5387,63,Male,Retired,Daily,10.43,Newspaper,Twitter,6,9,Yes,0,No,Discounts
+5243,38,Male,Student,Daily,46.64,Word of Mouth,Instagram,3,4,Yes,4,No,Loyalty Rewards
+3766,51,Prefer not to say,Other,Daily,5.43,Social Media,Twitter,7,7,Yes,1,No,Loyalty Rewards
+6958,22,Prefer not to say,Retired,Weekly,26.75,Social Media,Twitter,9,10,Yes,0,Yes,None
+4184,59,Female,Professional,Monthly,39.08,Flyers,None,4,1,No,2,No,Specialty Drinks
+8194,29,Male,Professional,Monthly,46.04,Newspaper,Instagram,1,10,Yes,3,Yes,None
+3653,20,Non-binary,Professional,Daily,39.99,Newspaper,None,2,4,No,3,No,Loyalty Rewards
+3692,35,Male,Retired,First-time,48.84,Social Media,Instagram,9,3,No,4,Yes,Loyalty Rewards
+9083,64,Non-binary,Professional,Daily,12.29,Flyers,None,5,1,No,3,Yes,Discounts
+4697,18,Male,Student,Monthly,19.03,Flyers,Instagram,8,6,No,4,No,Specialty Drinks
+6002,25,Prefer not to say,Professional,Monthly,24.79,Social Media,Twitter,4,10,No,3,No,Discounts
+5827,57,Male,Professional,Weekly,34.3,Word of Mouth,Instagram,10,5,No,3,Yes,Discounts
+4944,47,Female,Other,First-time,36.08,Word of Mouth,Instagram,2,8,Yes,2,Yes,Specialty Drinks
+2938,37,Non-binary,Retired,Monthly,13.96,Word of Mouth,TikTok,1,9,No,0,Yes,Specialty Drinks
+6411,51,Female,Other,Monthly,40.98,Social Media,None,1,2,No,3,No,None
+8593,38,Male,Student,Monthly,39.64,Word of Mouth,None,1,5,Yes,2,No,Loyalty Rewards
+3485,36,Non-binary,Other,First-time,34.67,Newspaper,TikTok,9,4,No,2,No,None
+6946,60,Female,Student,Weekly,11.31,Word of Mouth,None,3,2,No,0,Yes,Loyalty Rewards
+5720,64,Prefer not to say,Professional,Daily,35.07,Newspaper,TikTok,10,1,Yes,2,No,None
+1541,35,Male,Student,Daily,11.86,Newspaper,TikTok,1,4,Yes,0,Yes,Loyalty Rewards
+7842,57,Male,Professional,Weekly,31,Flyers,TikTok,2,7,No,0,No,Loyalty Rewards
+8109,41,Prefer not to say,Professional,Daily,32.61,Social Media,None,3,1,Yes,4,No,Specialty Drinks
+4630,59,Non-binary,Other,Monthly,11.78,Newspaper,Twitter,9,5,No,3,Yes,None
+6224,46,Non-binary,Student,Daily,29.13,Flyers,Facebook,4,8,Yes,4,No,None
+6321,51,Female,Retired,First-time,30.72,Social Media,Instagram,4,8,Yes,2,No,Discounts
+8537,39,Female,Other,Daily,32.16,Word of Mouth,None,3,4,Yes,1,Yes,None
+2974,21,Female,Student,First-time,42.86,Word of Mouth,TikTok,9,10,Yes,3,Yes,Discounts
+7534,40,Female,Other,Monthly,28.74,Flyers,Facebook,2,1,No,1,No,Discounts
+5493,34,Non-binary,Retired,First-time,16.05,Word of Mouth,Facebook,6,1,No,1,No,Loyalty Rewards
+7411,61,Female,Other,Monthly,18.43,Newspaper,None,2,8,No,3,Yes,Discounts
+6641,37,Prefer not to say,Student,First-time,43.08,Word of Mouth,Instagram,6,7,Yes,2,No,Specialty Drinks
+8288,56,Prefer not to say,Student,Monthly,25.17,Social Media,Twitter,3,10,Yes,2,Yes,None
+2624,26,Male,Student,Monthly,36.38,Newspaper,TikTok,6,3,No,3,No,Loyalty Rewards
+4358,36,Male,Student,First-time,47.63,Word of Mouth,Facebook,6,7,No,2,Yes,None
+5954,38,Female,Student,Daily,30.79,Newspaper,Twitter,8,8,No,1,No,Loyalty Rewards
+2487,60,Non-binary,Other,Monthly,27.18,Newspaper,Twitter,7,6,No,3,Yes,None
+1867,60,Non-binary,Other,Daily,27.38,Word of Mouth,Facebook,4,9,No,1,No,Discounts
+9567,61,Non-binary,Retired,Daily,9.22,Flyers,None,3,10,Yes,2,Yes,None
+9471,34,Prefer not to say,Student,First-time,48.14,Flyers,Instagram,3,5,Yes,1,Yes,Loyalty Rewards
+8077,51,Non-binary,Student,First-time,13.96,Newspaper,Twitter,7,4,Yes,0,No,Specialty Drinks
+1980,24,Female,Other,Daily,28.98,Flyers,Facebook,5,10,Yes,4,No,Specialty Drinks
+6523,21,Male,Student,Weekly,11.09,Flyers,Facebook,2,3,No,2,Yes,Specialty Drinks
+9906,62,Prefer not to say,Professional,Weekly,15.83,Social Media,Instagram,5,3,Yes,1,Yes,Loyalty Rewards
+9185,18,Female,Retired,Monthly,13.28,Newspaper,None,8,10,Yes,1,Yes,None
+6344,45,Non-binary,Student,Monthly,34.73,Flyers,TikTok,2,7,No,4,No,Loyalty Rewards
+1604,34,Non-binary,Retired,Weekly,9.66,Flyers,Facebook,4,7,No,3,Yes,Discounts
+2827,53,Female,Student,Daily,17.61,Word of Mouth,Twitter,7,8,Yes,3,No,None
+4935,51,Male,Retired,Monthly,5.19,Social Media,TikTok,10,9,Yes,2,No,Specialty Drinks
+8525,44,Female,Retired,Weekly,15.15,Newspaper,Facebook,4,1,Yes,0,No,Specialty Drinks
+5031,46,Male,Retired,First-time,38.67,Newspaper,Instagram,5,3,No,4,Yes,Discounts
+3812,43,Non-binary,Retired,Weekly,6.28,Flyers,Facebook,10,3,Yes,1,Yes,Discounts
+5742,38,Female,Professional,First-time,38.54,Flyers,Facebook,6,5,No,4,No,Specialty Drinks
+6892,57,Female,Student,First-time,32.95,Flyers,Twitter,7,6,No,3,No,Specialty Drinks
+1927,52,Prefer not to say,Professional,First-time,23.05,Social Media,Twitter,5,3,No,0,Yes,Loyalty Rewards
+1977,30,Female,Professional,First-time,20.42,Newspaper,Instagram,6,7,No,1,Yes,None
+3982,51,Non-binary,Professional,Monthly,15.56,Word of Mouth,TikTok,5,2,No,3,Yes,Specialty Drinks
+6497,53,Prefer not to say,Other,Weekly,39.38,Flyers,Instagram,9,10,Yes,0,Yes,Loyalty Rewards
+2077,58,Non-binary,Other,Weekly,14.38,Newspaper,None,8,8,Yes,1,No,None
+7530,60,Female,Other,Monthly,15.12,Flyers,Facebook,10,7,Yes,0,No,None
+8379,45,Male,Other,Monthly,34.47,Flyers,TikTok,8,7,Yes,3,No,Loyalty Rewards
+7890,27,Non-binary,Retired,First-time,27.35,Social Media,None,8,6,No,2,Yes,Discounts
+4336,49,Female,Professional,Monthly,31.53,Social Media,None,1,10,No,0,No,None
+4782,63,Female,Professional,Monthly,24.48,Flyers,TikTok,7,7,No,0,No,Specialty Drinks
+5059,44,Female,Professional,Monthly,34.85,Word of Mouth,Instagram,2,4,Yes,1,Yes,Loyalty Rewards
+4730,50,Prefer not to say,Other,First-time,33.09,Social Media,TikTok,4,10,No,2,Yes,Discounts
+1334,18,Female,Professional,Monthly,27.59,Newspaper,None,7,2,Yes,0,Yes,Specialty Drinks
+7274,31,Male,Professional,Weekly,18.41,Flyers,TikTok,3,4,Yes,2,No,Discounts
+6180,49,Female,Professional,Weekly,37.94,Social Media,TikTok,6,8,Yes,3,No,Discounts
+6139,45,Male,Student,Weekly,42.97,Newspaper,None,4,6,No,3,No,Discounts
+5777,60,Male,Professional,Monthly,35.01,Word of Mouth,Facebook,6,2,Yes,4,Yes,None
+8521,49,Male,Other,Monthly,27.71,Word of Mouth,Facebook,5,8,Yes,2,No,None
+5624,58,Prefer not to say,Retired,Weekly,37.03,Flyers,Instagram,7,10,No,3,Yes,None
+8341,47,Prefer not to say,Other,Monthly,48.9,Newspaper,None,4,8,Yes,1,No,None
+7416,54,Prefer not to say,Professional,Daily,36.05,Word of Mouth,Twitter,7,2,No,3,No,None
+1093,51,Female,Other,Weekly,49.8,Newspaper,Facebook,2,7,Yes,1,Yes,Discounts
+7322,58,Female,Student,Weekly,47.83,Newspaper,None,9,1,Yes,4,No,Discounts
+3351,52,Non-binary,Other,Weekly,39.27,Social Media,Facebook,2,4,No,3,No,Discounts
+6049,41,Female,Other,Monthly,11.56,Social Media,Facebook,10,2,Yes,1,Yes,None
+6955,61,Female,Professional,Daily,12.89,Social Media,None,4,2,No,0,Yes,Specialty Drinks
+9664,51,Male,Professional,Daily,47.04,Flyers,Facebook,10,7,No,0,Yes,Loyalty Rewards
+6485,41,Prefer not to say,Student,Daily,26.59,Newspaper,TikTok,7,4,No,1,No,Specialty Drinks
+4187,45,Female,Retired,Weekly,21.61,Newspaper,Instagram,7,9,No,2,Yes,Discounts
+7251,65,Male,Retired,First-time,19.64,Newspaper,Twitter,4,8,Yes,0,No,None
+1600,35,Non-binary,Other,Weekly,26.33,Social Media,Instagram,5,9,No,0,Yes,Specialty Drinks
+4613,47,Prefer not to say,Professional,Monthly,46.9,Word of Mouth,None,5,1,No,2,Yes,None
+3150,39,Non-binary,Retired,Monthly,28.95,Flyers,Instagram,4,3,No,4,No,Discounts
+9946,43,Male,Professional,Daily,46.24,Newspaper,Twitter,9,9,Yes,1,Yes,Specialty Drinks
+2281,37,Prefer not to say,Professional,First-time,19.71,Word of Mouth,TikTok,4,10,Yes,3,Yes,Discounts
+5005,48,Prefer not to say,Retired,Daily,18.69,Newspaper,Facebook,1,7,No,0,Yes,None
+8560,57,Female,Student,First-time,5.24,Word of Mouth,TikTok,10,3,Yes,2,Yes,Loyalty Rewards
+5938,47,Male,Student,Monthly,26.71,Social Media,Facebook,5,6,No,1,Yes,Specialty Drinks
+1196,25,Non-binary,Other,Weekly,21.97,Newspaper,Instagram,3,2,No,4,Yes,Loyalty Rewards
+2215,64,Prefer not to say,Student,Daily,11.19,Flyers,Instagram,10,3,Yes,4,No,Loyalty Rewards
+4630,42,Male,Other,First-time,28.24,Word of Mouth,None,9,4,Yes,1,No,None
+2216,55,Prefer not to say,Retired,Monthly,41.15,Social Media,Facebook,10,4,No,1,Yes,Specialty Drinks
+6544,52,Prefer not to say,Other,Monthly,6.85,Word of Mouth,Twitter,5,1,No,3,No,Specialty Drinks
+2072,18,Non-binary,Professional,Monthly,37.1,Social Media,Instagram,4,2,Yes,1,No,Specialty Drinks
+7603,47,Prefer not to say,Professional,Monthly,36.9,Flyers,Instagram,9,2,No,3,No,Loyalty Rewards
+6141,64,Prefer not to say,Professional,Monthly,45.3,Newspaper,Instagram,4,4,No,1,No,Discounts
+4840,21,Prefer not to say,Retired,Daily,17.38,Flyers,Instagram,3,3,No,0,Yes,Discounts
+6496,45,Female,Student,Monthly,11.07,Word of Mouth,Facebook,8,9,Yes,1,No,Specialty Drinks
+9323,58,Male,Professional,Monthly,46.68,Word of Mouth,TikTok,1,9,No,2,No,Specialty Drinks
+3100,50,Female,Other,Monthly,33.94,Newspaper,TikTok,9,1,Yes,4,No,Loyalty Rewards
+2082,60,Female,Other,Weekly,32.2,Social Media,Twitter,4,4,Yes,1,Yes,Discounts
+7980,23,Non-binary,Professional,Weekly,18.63,Social Media,None,5,4,No,3,Yes,Loyalty Rewards
+3749,37,Female,Retired,Daily,14.68,Word of Mouth,None,3,10,Yes,0,No,Loyalty Rewards
+7230,31,Male,Student,Weekly,41.89,Social Media,TikTok,4,10,Yes,3,No,Discounts
+1227,26,Non-binary,Professional,Weekly,30.5,Social Media,Facebook,2,6,Yes,3,No,None
+3040,45,Prefer not to say,Professional,Weekly,45.7,Word of Mouth,TikTok,7,9,Yes,3,Yes,Specialty Drinks
+2592,48,Prefer not to say,Professional,Daily,32.07,Flyers,Facebook,3,7,Yes,3,Yes,Loyalty Rewards
+2197,41,Male,Retired,First-time,14.03,Flyers,Instagram,9,10,Yes,4,No,Specialty Drinks
+5098,23,Female,Other,First-time,41.86,Flyers,Facebook,4,5,No,4,No,Specialty Drinks
+1606,61,Female,Other,First-time,34.54,Word of Mouth,Instagram,2,6,No,2,Yes,Loyalty Rewards
+7281,39,Non-binary,Other,Daily,24.7,Word of Mouth,Twitter,1,9,No,4,Yes,Specialty Drinks
+5576,28,Prefer not to say,Retired,First-time,11.2,Word of Mouth,TikTok,7,1,No,3,No,Loyalty Rewards
+8012,26,Non-binary,Retired,Monthly,5.95,Word of Mouth,Facebook,5,8,No,0,No,Specialty Drinks
+7085,35,Male,Other,First-time,36.87,Social Media,Instagram,3,4,No,2,No,Discounts
+2773,60,Male,Student,Monthly,9.36,Social Media,TikTok,2,5,Yes,1,Yes,Specialty Drinks
+9899,36,Non-binary,Retired,Weekly,8.79,Newspaper,TikTok,3,5,No,0,Yes,None
+2498,50,Prefer not to say,Retired,Monthly,13.8,Newspaper,Facebook,9,10,Yes,1,No,Discounts
+3952,60,Non-binary,Professional,Daily,49.34,Word of Mouth,None,4,10,No,3,No,Loyalty Rewards
+4158,57,Female,Professional,Monthly,34.93,Flyers,Facebook,4,3,Yes,3,Yes,Specialty Drinks
