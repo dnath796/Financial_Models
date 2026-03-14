@@ -1,5 +1,3 @@
-Here is a **clean GitHub documentation (README.md)** you can include with your **Time Series Forecasting Python project**. This format is commonly used when uploading projects to GitHub.
-
 ---
 
 # Time Series Forecasting using Python
