@@ -41,7 +41,7 @@ if "Net_Income" in df.columns:
 # -----------------------------
 # 5. DISPLAY ANALYSIS TABLE
 # -----------------------------
-print("\n📊 Financial Analysis:")
+print("\n Financial Analysis:")
 print(df.round(2))
 
 
