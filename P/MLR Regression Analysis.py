@@ -10,8 +10,7 @@ from statsmodels.stats.diagnostic import het_breuschpagan
 # -------------------------
 # 1. Load dataset
 # -------------------------
-data = pd.read_csv('data.csv')
-
+data = pd.read_csv('./Data_center/regression_advertising_data.csv');
 # Independent variables
 X = data[['TV', 'Radio', 'Newspaper']]
 
