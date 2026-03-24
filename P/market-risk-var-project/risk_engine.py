@@ -5,93 +5,95 @@ from scipy.stats import norm
 import matplotlib.pyplot as plt
 from arch import arch_model
 
-# -----------------------------
-# Load Data (S&P 500)
-# -----------------------------
-data = yf.download("^GSPC", start="2015-01-01", end="2025-01-01", auto_adjust=True)
-price = data["Close"]
-returns = price.pct_change().dropna()
+# =========================
+# 1. LOAD DATA
+# =========================
+data = yf.download("^GSPC", start="2018-01-01", auto_adjust=True)
 
-portfolio_value = 1_000_000
-alpha = 0.05  # 95% VaR
+prices = data["Close"].squeeze()
+returns = np.log(prices).diff().dropna()
 
-# -----------------------------
-# Historical VaR / DEAR
-# -----------------------------
-hist_var = np.percentile(returns, alpha * 100)
-hist_dear = hist_var * portfolio_value
+portfolio_value = 100000
+confidence = 0.95
 
-# -----------------------------
-# Parametric VaR / DEAR
-# -----------------------------
-mu = returns.mean().item()
-sigma = returns.std().item()
-z = norm.ppf(alpha)
+mean = returns.mean()
+std = returns.std()
+z = norm.ppf(1 - confidence)
 
-param_var = mu + z * sigma
-param_dear = float(param_var) * portfolio_value
+# =========================
+# 2. VaR METHODS
+# =========================
 
-# -----------------------------
-# Monte Carlo VaR / DEAR
-# -----------------------------
-simulations = 10000
-mc_returns = np.random.normal(mu, sigma, simulations)
+# Parametric VaR
+parametric_var = -portfolio_value * (mean + z * std)
 
-mc_var = np.percentile(mc_returns, alpha * 100)
-mc_dear = mc_var * portfolio_value
+# Historical VaR
+hist_var = -portfolio_value * np.percentile(returns, (1 - confidence) * 100)
 
-# -----------------------------
-# GARCH Monte Carlo VaR / DEAR
-# -----------------------------
-garch_model = arch_model(returns * 100, vol='Garch', p=1, q=1)
-garch_res = garch_model.fit(disp='off')
+# Monte Carlo VaR
+np.random.seed(42)
+sim_returns = np.random.normal(mean, std, 10000)
+mc_var = -portfolio_value * np.percentile(sim_returns, (1 - confidence) * 100)
 
-forecast = garch_res.forecast(horizon=1)
-vol = np.sqrt(forecast.variance.values[-1][0]) / 100
+# =========================
+# 3. EXPECTED SHORTFALL (ES)
+# =========================
+var_threshold = np.percentile(returns, (1 - confidence) * 100)
+es = -portfolio_value * returns[returns <= var_threshold].mean()
 
-garch_sim = np.random.normal(0, vol, simulations)
-garch_var = np.percentile(garch_sim, alpha * 100)
-garch_dear = garch_var * portfolio_value
+# =========================
+# 4. GARCH MODEL
+# =========================
+garch = arch_model(returns * 100, vol='Garch', p=1, q=1)
+garch_fit = garch.fit(disp="off")
 
-# -----------------------------
-# Backtesting (Historical VaR)
-# -----------------------------
-violations = (returns < hist_var).sum()
-expected = len(returns) * alpha
+garch_vol = garch_fit.conditional_volatility / 100
 
-# -----------------------------
-# Rolling VaR
-# -----------------------------
-rolling_var = returns.rolling(100).quantile(alpha)
+# GARCH-based VaR
+garch_var = -portfolio_value * (mean + z * garch_vol.iloc[-1])
 
-# -----------------------------
-# Results
-# -----------------------------
-print("\n📊 MARKET RISK RESULTS (DEAR)")
-print("-" * 40)
-print(f"Historical DEAR : ${hist_dear:,.2f}")
-print(f"Parametric DEAR : ${param_dear:,.2f}")
-print(f"Monte Carlo DEAR: ${mc_dear:,.2f}")
-print(f"GARCH MC DEAR   : ${garch_dear:,.2f}")
+# =========================
+# 5. STRESS TESTING
+# =========================
+stress_scenarios = {
+    "Market Crash (-20%)": -0.20,
+    "Severe Crash (-30%)": -0.30,
+    "Mild Shock (-10%)": -0.10
+}
 
-print("\n📉 BACKTESTING (Historical VaR)")
-print("-" * 40)
-print(f"Violations: {violations}")
-print(f"Expected  : {expected:.0f}")
+stress_results = {k: v * portfolio_value for k, v in stress_scenarios.items()}
 
-# -----------------------------
-# PLOTS
-# -----------------------------
-plt.figure(figsize=(12,6))
-plt.plot(returns.values, label="Returns")
-plt.plot(rolling_var.values, label="Rolling VaR (5%)", color="red")
-plt.title("Rolling VaR vs S&P 500 Returns")
-plt.legend()
-plt.show()
+# =========================
+# 6. BACKTESTING (Kupiec)
+# =========================
+var_series = - (mean + z * std)
 
-plt.figure(figsize=(10,5))
-plt.hist(returns, bins=100, alpha=0.5, label="Historical")
-plt.hist(mc_returns, bins=100, alpha=0.5, label="Monte Carlo")
-plt.legend()
-plt.title("Return Distribution Comparison")
-plt.show()
+violations = returns < var_series
+num_violations = violations.sum()
+total_obs = len(returns)
+
+violation_ratio = num_violations / total_obs
+
+# =========================
+# 7. RESULTS
+# =========================
+print("\n📊 VALUE AT RISK")
+print("------------------------")
+print(f"Parametric VaR : ${parametric_var:,.2f}")
+print(f"Historical VaR : ${hist_var:,.2f}")
+print(f"Monte Carlo VaR: ${mc_var:,.2f}")
+print(f"GARCH VaR      : ${garch_var:,.2f}")
+
+print("\n📉 EXPECTED SHORTFALL")
+print("------------------------")
+print(f"ES (CVaR)      : ${es:,.2f}")
+
+print("\n🔥 STRESS TESTING")
+print("------------------------")
+for k, v in stress_results.items():
+    print(f"{k}: ${v:,.2f}")
+
+print("\n📊 BACKTESTING")
+print("------------------------")
+print(f"Violations     : {num_violations}")
+print(f"Violation Rate : {violation_ratio:.4f}")
