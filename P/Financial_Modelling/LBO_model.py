@@ -123,3 +123,27 @@ print(f"IRR: {irr*100:.2f}%\n")
 
 print("===== PROJECTIONS =====")
 print(df)
+
+
+# Sensitivity: Exit Multiple vs IRR
+
+exit_multiples = [8, 9, 10, 11, 12]
+results = []
+
+for multiple in exit_multiples:
+    exit_ev = exit_ebitda * multiple
+    exit_equity = exit_ev - exit_debt
+    
+    cf = [-equity] + [0]*years
+    cf[-1] = exit_equity
+    
+    irr = npf.irr(cf)
+    
+    results.append({
+        "Exit Multiple": multiple,
+        "IRR (%)": irr * 100
+    })
+
+sens_df = pd.DataFrame(results)
+print("\n===== IRR Sensitivity =====")
+print(sens_df)
