@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 # -----------------------------
 # 1. LOAD DATA
 # -----------------------------
-file_path = "/Users/deepikanath/dnath796/Git/Financial_Models/Data_center/PL_Sample_Data.csv"
+file_path = "/Users/deepikanath/Financial_Models/Data_center/PL_Sample_Data.csv"
 df = pd.read_csv(file_path)
 
 # Sort by year (important for growth calculations)
