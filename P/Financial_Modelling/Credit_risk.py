@@ -141,3 +141,51 @@ plt.title("Multi-Asset EE & PFE")
 plt.legend()
 plt.grid()
 plt.show()
+
+
+
+# ============================
+# INPUTS (from Monte Carlo)
+# ============================
+# Assume EE already computed from simulation
+# Example placeholder (replace with your EE)
+n_steps = 50
+T = 1.0
+dt = T / n_steps
+time_grid = np.linspace(0, T, n_steps + 1)
+
+# Simulated EE (example shape)
+EE = np.linspace(5, 15, n_steps + 1)  # replace with real EE
+
+# ============================
+# CREDIT CURVE (Hazard Rates)
+# ============================
+# Flat hazard rate (can be term-structured)
+lambda_flat = 0.02  # 2% annual default intensity
+
+# Survival probability S(t)
+survival_prob = np.exp(-lambda_flat * time_grid)
+
+# ============================
+# DEFAULT PROBABILITY INCREMENTS
+# ============================
+dPD = np.zeros_like(time_grid)
+
+for i in range(1, len(time_grid)):
+    dPD[i] = survival_prob[i-1] - survival_prob[i]
+
+# ============================
+# DISCOUNT FACTOR
+# ============================
+r = 0.03  # risk-free rate
+discount_factor = np.exp(-r * time_grid)
+
+# ============================
+# CVA CALCULATION
+# ============================
+R = 0.4  # recovery rate
+LGD = 1 - R
+
+CVA = LGD * np.sum(EE * discount_factor * dPD)
+
+print("CVA:", CVA)
