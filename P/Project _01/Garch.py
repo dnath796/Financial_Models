@@ -12,13 +12,16 @@ import numpy as np
 import pandas as pd
 from arch import arch_model
 
+from time_series_utils import load_time_series
+
 
 class GarchModel:
-    def __init__(self, data_path, date_col=None, value_col=None, return_type="log"):
+    def __init__(self, data_path, date_col=None, value_col=None, return_type="log", series_name=None):
         self.data_path = data_path
         self.date_col = date_col
         self.value_col = value_col
         self.return_type = return_type
+        self.series_name = series_name
         self.series = self.load_data()
         self.returns = self.compute_returns()
         self.model = None
@@ -32,38 +35,29 @@ class GarchModel:
         self.vol_name = None
         self.dist_name = None
 
+    @staticmethod
+    def format_label(value):
+        if hasattr(value, "date"):
+            return str(value.date())
+        return str(value)
+
     def load_data(self):
         if not os.path.exists(self.data_path):
             raise FileNotFoundError(f"Data file not found at {self.data_path}")
 
-        df = pd.read_csv(self.data_path, sep=None, engine="python")
-        df.columns = df.columns.str.strip()
-
-        if self.date_col:
-            date_col = self.date_col.strip()
-            if date_col not in df.columns:
-                raise ValueError(f"Date column '{self.date_col}' not found in {list(df.columns)}")
-            df[date_col] = pd.to_datetime(df[date_col])
-            df = df.sort_values(date_col).set_index(date_col)
-
-        if self.value_col:
-            value_col = self.value_col.strip()
-            if value_col not in df.columns:
-                raise ValueError(f"Value column '{self.value_col}' not found in {list(df.columns)}")
-            series = df[value_col]
-        else:
-            numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
-            if not numeric_cols:
-                raise ValueError("No numeric columns found in the input data.")
-            series = df[numeric_cols[0]]
-
-        series = pd.to_numeric(series, errors="coerce").dropna()
-        if series.empty:
-            raise ValueError("Selected series is empty after removing non-numeric values.")
+        series, metadata = load_time_series(
+            self.data_path,
+            date_col=self.date_col,
+            value_col=self.value_col,
+        )
+        self.date_col = metadata["date_column"]
+        self.value_col = metadata["value_column"]
+        self.series_name = self.series_name or metadata["series_label"]
 
         print("Loaded series.")
         if isinstance(series.index, pd.DatetimeIndex):
             print(f"Date range: {series.index.min().date()} to {series.index.max().date()}")
+        print(f"Series name: {self.series_name}")
         print("Most recent observations:")
         print(series.tail())
         return series
@@ -86,8 +80,8 @@ class GarchModel:
 
     def plot_series(self):
         plt.figure(figsize=(11, 5))
-        plt.plot(self.series, label="Original series")
-        plt.title("Input Series")
+        plt.plot(self.series, label=self.series_name)
+        plt.title(f"{self.series_name} Level")
         plt.xlabel("Date" if isinstance(self.series.index, pd.DatetimeIndex) else "Observation")
         plt.ylabel("Value")
         plt.legend()
@@ -96,8 +90,8 @@ class GarchModel:
 
     def plot_returns(self):
         plt.figure(figsize=(11, 5))
-        plt.plot(self.returns, label="Returns", color="tab:blue")
-        plt.title("Returns Used for GARCH")
+        plt.plot(self.returns, label=f"{self.series_name} returns", color="tab:blue")
+        plt.title(f"{self.series_name} Returns Used for GARCH")
         plt.xlabel("Date" if isinstance(self.returns.index, pd.DatetimeIndex) else "Observation")
         plt.ylabel("Return (%)")
         plt.legend()
@@ -289,19 +283,19 @@ class GarchModel:
 
         lines = [
             "Historical context:",
-            f"- Sample runs from {self.series.index.min().date()} to {self.series.index.max().date()}.",
-            f"- Latest OVX level is {context['current_level']:.2f}, which is {level_vs_history} the full-sample average of {context['hist_mean']:.2f}.",
-            f"- The current OVX level sits around the {context['current_percentile']:.1f}th percentile of the full history.",
-            f"- Full-sample range is {context['hist_min']:.2f} on {context['hist_min_date'].date()} to {context['hist_max']:.2f} on {context['hist_max_date'].date()}.",
+            f"- Sample runs from {self.format_label(self.series.index.min())} to {self.format_label(self.series.index.max())}.",
+            f"- Latest {self.series_name} level is {context['current_level']:.2f}, which is {level_vs_history} the full-sample average of {context['hist_mean']:.2f}.",
+            f"- The current {self.series_name} level sits around the {context['current_percentile']:.1f}th percentile of the full history.",
+            f"- Full-sample range is {context['hist_min']:.2f} on {self.format_label(context['hist_min_date'])} to {context['hist_max']:.2f} on {self.format_label(context['hist_max_date'])}.",
             "",
             "Volatility interpretation:",
             f"- Latest model-implied conditional volatility is {context['current_cond_vol']:.2f}%, versus a historical model average of {context['avg_cond_vol']:.2f}%.",
             f"- That places current conditional volatility near the {context['cond_vol_percentile']:.1f}th percentile of the model's full history.",
             "",
             "Upcoming projection:",
-            f"- For {context['forecast_start_date'].date()} to {context['forecast_end_date'].date()}, forecast volatility averages {context['forecast_avg']:.2f}%.",
+            f"- For {self.format_label(context['forecast_start_date'])} to {self.format_label(context['forecast_end_date'])}, forecast volatility averages {context['forecast_avg']:.2f}%.",
             f"- The model projects volatility {direction_text}, from {context['forecast_start']:.2f}% at the start of the week to {context['forecast_end']:.2f}% by the end of the week.",
-            "- In plain terms: the model is not forecasting a volatility collapse. It is pointing to an elevated and slightly firmer risk regime in the coming week.",
+            f"- In plain terms: the model is not forecasting a volatility collapse in {self.series_name}. It is pointing to an elevated and slightly firmer risk regime in the coming week.",
         ]
 
         return "\n".join(lines), context
@@ -320,7 +314,7 @@ class GarchModel:
             model_label = f"{model_label}{self.selected_order}"
 
         if title is None:
-            title = "OVX Volatility Forecast Report"
+            title = f"{self.series_name} Volatility Forecast Report"
 
         fig, axes = plt.subplots(2, 2, figsize=(16, 10))
         fig.suptitle(title, fontsize=18, fontweight="bold", y=0.98)
@@ -331,7 +325,7 @@ class GarchModel:
         if isinstance(self.series.index, pd.DatetimeIndex):
             recent_start = self.series.index[max(0, len(self.series) - recent_window)]
             axes[0, 0].axvspan(recent_start, self.series.index[-1], color="#dfefff", alpha=0.35, label=f"Recent {recent_window} obs")
-        axes[0, 0].set_title("OVX Level Across Full History")
+        axes[0, 0].set_title(f"{self.series_name} Level Across Full History")
         axes[0, 0].set_ylabel("Index level")
         axes[0, 0].grid(alpha=0.25)
         axes[0, 0].legend(loc="upper left")
@@ -371,7 +365,7 @@ class GarchModel:
             "\n".join(
                 [
                     "Presentation Summary",
-                    f"Latest OVX level: {latest_value:.2f}",
+                    f"Latest {self.series_name} level: {latest_value:.2f}",
                     f"Model used: {model_label}",
                     f"Mean model: {self.mean_name or 'N/A'}",
                     f"Distribution: {self.dist_name or 'N/A'}",
@@ -410,8 +404,9 @@ def build_parser():
         default="/Users/deepikanath/dnath796/Git/Financial_Models/Data_center/OVXCLS.csv",
         help="Path to the input data file.",
     )
-    parser.add_argument("--date-col", default="Date", help="Name of the date column.")
-    parser.add_argument("--value-col", default="Value", help="Name of the value column.")
+    parser.add_argument("--date-col", default=None, help="Name of the date column. Auto-detected when omitted.")
+    parser.add_argument("--value-col", default=None, help="Name of the value column. Auto-detected when omitted.")
+    parser.add_argument("--series-name", default=None, help="Optional display label for charts and summaries.")
     parser.add_argument(
         "--return-type",
         choices=["log", "pct"],
@@ -459,6 +454,7 @@ def main():
         date_col=args.date_col,
         value_col=args.value_col,
         return_type=args.return_type,
+        series_name=args.series_name,
     )
 
     if args.plot:

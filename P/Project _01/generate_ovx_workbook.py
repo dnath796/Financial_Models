@@ -1,19 +1,24 @@
+import argparse
 import math
+import os
+import tempfile
 from copy import copy
 from pathlib import Path
 
-import numpy as np
+os.environ.setdefault("MPLCONFIGDIR", tempfile.gettempdir())
+
 import pandas as pd
 import statsmodels.api as sm
 from arch import arch_model
 from openpyxl import load_workbook
 from scipy.stats import chi2
 
+from time_series_utils import load_time_series, safe_sheet_title
+
 
 PROJECT_DIR = Path("/Users/deepikanath/dnath796/Git/Financial_Models/P/Project _01")
-TEMPLATE_PATH = Path("/Users/deepikanath/Downloads/Volatility Class Work (2).xlsx")
-DATA_PATH = Path("/Users/deepikanath/dnath796/Git/Financial_Models/Data_center/OVXCLS.csv")
-OUTPUT_PATH = PROJECT_DIR / "Volatility Class Work - OVX.xlsx"
+DEFAULT_TEMPLATE_PATH = Path("/Users/deepikanath/Downloads/Volatility Class Work (2).xlsx")
+DEFAULT_DATA_PATH = Path("/Users/deepikanath/dnath796/Git/Financial_Models/Data_center/OVXCLS.csv")
 
 
 def copy_style(source_cell, target_cell):
@@ -32,17 +37,21 @@ def ensure_row_style(ws, target_row, template_row, start_col, end_col):
     ws.row_dimensions[target_row].height = ws.row_dimensions[template_row].height
 
 
-def load_ovx_data():
-    df = pd.read_csv(DATA_PATH, sep=None, engine="python")
-    df.columns = df.columns.str.strip()
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-    df["Value"] = pd.to_numeric(df["Value"], errors="coerce")
-    df = df.dropna(subset=["Date", "Value"]).sort_values("Date").reset_index(drop=True)
-    return df
+def load_series_frame(data_path, date_col=None, value_col=None, series_name=None):
+    series, metadata = load_time_series(data_path, date_col=date_col, value_col=value_col)
+    label = series_name or metadata["series_label"]
+
+    if isinstance(series.index, pd.DatetimeIndex):
+        dates = pd.Series(series.index, name="Date")
+    else:
+        dates = pd.Series(series.index, name="Date")
+
+    frame = pd.DataFrame({"Date": dates.to_list(), "Value": series.to_list()})
+    return frame, label, metadata
 
 
 def fit_models(df):
-    prices = df["Value"]
+    prices = df["Value"].astype(float)
     returns = prices.pct_change()
 
     reg_df = pd.DataFrame({"return": returns, "lag1": returns.shift(1)}).dropna().reset_index(drop=True)
@@ -141,6 +150,9 @@ def build_table(df, returns, reg_df, ols, residuals, garch_fit):
         "df_resid": int(ols.df_resid),
         "df_total": int(ols.df_model + ols.df_resid),
         "conf_int": ols.conf_int(),
+        "std_errs": [float(ols.bse.iloc[0]), float(ols.bse.iloc[1])],
+        "t_stats": [float(ols.tvalues.iloc[0]), float(ols.tvalues.iloc[1])],
+        "p_values": [float(ols.pvalues.iloc[0]), float(ols.pvalues.iloc[1])],
     }
 
     log_like_full = -0.5 * (
@@ -157,9 +169,6 @@ def build_table(df, returns, reg_df, ols, residuals, garch_fit):
     stats["restricted_llf"] = float(log_like_restricted)
     stats["lr_stat"] = float(-2 * (log_like_restricted - log_like_full))
     stats["chi_sq_95"] = float(chi2.ppf(0.95, 2))
-    stats["std_errs"] = [float(ols.bse.iloc[0]), float(ols.bse.iloc[1])]
-    stats["t_stats"] = [float(ols.tvalues.iloc[0]), float(ols.tvalues.iloc[1])]
-    stats["p_values"] = [float(ols.pvalues.iloc[0]), float(ols.pvalues.iloc[1])]
 
     return {
         "dates": dates,
@@ -175,11 +184,16 @@ def build_table(df, returns, reg_df, ols, residuals, garch_fit):
     }
 
 
-def write_workbook(table):
-    wb = load_workbook(TEMPLATE_PATH)
+def derive_output_path(template_path, data_path, output_path, sheet_title):
+    if output_path:
+        return Path(output_path)
+    return PROJECT_DIR / f"{Path(template_path).stem} - {sheet_title}.xlsx"
+
+
+def write_workbook(table, template_path, output_path, sheet_title, series_label):
+    wb = load_workbook(template_path)
     ws = wb[wb.sheetnames[0]]
-    original_sheet_name = ws.title
-    ws.title = "OVX"
+    ws.title = sheet_title
 
     data_template_row = 3825
     residual_template_row = 3843
@@ -194,7 +208,7 @@ def write_workbook(table):
         if row <= last_residual_row:
             ensure_row_style(ws, row, residual_template_row, 26, 28)
 
-    ws["B5"] = "OVXCLS - Index Value"
+    ws["B5"] = f"{series_label} - Index Value"
 
     for idx, (date_value, price_value) in enumerate(zip(table["dates"], table["prices"]), start=data_start_row):
         ws.cell(idx, 1, date_value)
@@ -288,9 +302,9 @@ def write_workbook(table):
         2: f"'{ws.title}'!$J$11:$J${last_data_row}",
     }
     chart_titles = {
-        0: "OVX Returns",
-        1: "OVX EWMA Volatility",
-        2: "OVX GARCH Volatility",
+        0: f"{series_label} Returns",
+        1: f"{series_label} EWMA Volatility",
+        2: f"{series_label} GARCH Volatility",
     }
     for idx, chart in enumerate(ws._charts):
         if idx in chart_ranges and chart.ser:
@@ -299,15 +313,48 @@ def write_workbook(table):
 
     wb.calculation.fullCalcOnLoad = True
     wb.calculation.forceFullCalc = True
-    wb.save(OUTPUT_PATH)
-    return OUTPUT_PATH
+    wb.save(output_path)
+    return output_path
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(description="Fill the class workbook template with a new time-series dataset.")
+    parser.add_argument("--data-path", default=str(DEFAULT_DATA_PATH), help="Path to the input data file.")
+    parser.add_argument("--template-path", default=str(DEFAULT_TEMPLATE_PATH), help="Path to the Excel template workbook.")
+    parser.add_argument("--output-path", default=None, help="Optional path for the generated workbook.")
+    parser.add_argument("--date-col", default=None, help="Name of the date column. Auto-detected when omitted.")
+    parser.add_argument("--value-col", default=None, help="Name of the value column. Auto-detected when omitted.")
+    parser.add_argument("--series-name", default=None, help="Optional label to use in the sheet header and chart titles.")
+    return parser
+
+
+def main():
+    args = build_parser().parse_args()
+
+    frame, series_label, _ = load_series_frame(
+        data_path=args.data_path,
+        date_col=args.date_col,
+        value_col=args.value_col,
+        series_name=args.series_name,
+    )
+    returns, reg_df, ols, residuals, garch_fit = fit_models(frame)
+    table = build_table(frame, returns, reg_df, ols, residuals, garch_fit)
+
+    sheet_title = safe_sheet_title(series_label, fallback="Series")
+    output_path = derive_output_path(args.template_path, args.data_path, args.output_path, sheet_title)
+    output = write_workbook(
+        table=table,
+        template_path=args.template_path,
+        output_path=output_path,
+        sheet_title=sheet_title,
+        series_label=series_label,
+    )
+
+    print(f"Saved workbook to {output}")
+    print(f"Series label: {series_label}")
+    print(f"Rows written: {len(frame)}")
+    print(f"Date range: {frame['Date'].iloc[0]} to {frame['Date'].iloc[-1]}")
 
 
 if __name__ == "__main__":
-    ovx_df = load_ovx_data()
-    returns, reg_df, ols, residuals, garch_fit = fit_models(ovx_df)
-    table = build_table(ovx_df, returns, reg_df, ols, residuals, garch_fit)
-    output = write_workbook(table)
-    print(f"Saved OVX workbook to {output}")
-    print(f"Rows written: {len(ovx_df)}")
-    print(f"Date range: {ovx_df['Date'].min().date()} to {ovx_df['Date'].max().date()}")
+    main()
