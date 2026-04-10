@@ -20,6 +20,7 @@
 =============================================================================
 """
 
+import importlib.util
 import os
 import warnings
 
@@ -72,24 +73,25 @@ def load_sheet(sheet, date_col=0):
     return df.dropna(subset=[dc]).set_index(dc)
 
 print("\n[1] Loading real data...")
-wti      = load_sheet("WTI_Price")
-comm_inv = load_sheet("EIA_Commercial_Inventory")
-spr      = load_sheet("EIA_SPR")
-vix      = load_sheet("VIX")
-sp500    = load_sheet("SP500")
-dxy      = load_sheet("DXY")
-us_prod  = load_sheet("US_Crude_Production")
-tsy      = load_sheet("Treasury_10Y")
-ovx      = load_sheet("OVX")
-kilian   = load_sheet("Kilian_GREA")
-gold     = load_sheet("Gold")
-brent_wti= load_sheet("Brent_WTI_Spread")
-crack    = load_sheet("Crack_Spread")
-cftc     = load_sheet("CFTC_COT")
-gpr      = load_sheet("GPR_Index")
-refinery = load_sheet("Refinery_Utilization")
-ip       = load_sheet("US_Industrial_Production")
-brent    = load_sheet("Brent")
+def load_required_sheet(sheet, required_cols):
+    df = load_sheet(sheet)
+    missing_cols = [col for col in required_cols if col not in df.columns]
+    if missing_cols:
+        raise ValueError(f"Sheet '{sheet}' is missing columns: {missing_cols}")
+    return df
+
+wti       = load_required_sheet("WTI_Price", ["WTI_Close"])
+vix       = load_required_sheet("VIX", ["VIX_Close"])
+sp500     = load_required_sheet("SP500", ["SP500_Close"])
+dxy       = load_required_sheet("DXY", ["DXY_Close"])
+tsy       = load_required_sheet("Treasury_10Y", ["UST_10Y_Yield"])
+ovx       = load_required_sheet("OVX", ["OVX_Close"])
+gold      = load_required_sheet("Gold", ["Gold_Close"])
+brent_wti = load_required_sheet("Brent_WTI_Spread", ["Brent_WTI_Spread"])
+crack     = load_required_sheet("Crack_Spread", ["Crack_Spread_321"])
+brent     = load_required_sheet("Brent", ["Brent_Close"])
+natgas    = load_required_sheet("NatGas_HenryHub", ["NatGas_Close"])
+copper    = load_required_sheet("Copper", ["Copper_Close"])
 
 weekly_idx = pd.date_range("2010-01-08", "2019-12-27", freq="W-FRI")
 
@@ -99,23 +101,17 @@ def align_wk(df):  return df.reindex(weekly_idx, method="ffill")
 
 master = pd.DataFrame(index=weekly_idx)
 master = master.join(to_weekly(wti[["WTI_Close"]]), how="left")
-master = master.join(align_wk(comm_inv[["Chg_Commercial_Inventories"]]), how="left")
-master = master.join(align_wk(spr[["Chg_SPR"]]), how="left")
 master = master.join(to_weekly(vix[["VIX_Close"]]), how="left")
 master = master.join(to_weekly(sp500[["SP500_Close"]]), how="left")
 master = master.join(to_weekly(dxy[["DXY_Close"]]), how="left")
-master = master.join(fwd_fill(us_prod[["US_Crude_Production_kbbl_day"]]), how="left")
 master = master.join(to_weekly(tsy[["UST_10Y_Yield"]]), how="left")
 master = master.join(to_weekly(ovx[["OVX_Close"]]), how="left")
-master = master.join(fwd_fill(kilian[["Kilian_GREA"]]), how="left")
 master = master.join(to_weekly(gold[["Gold_Close"]]), how="left")
 master = master.join(to_weekly(brent_wti[["Brent_WTI_Spread"]]), how="left")
 master = master.join(to_weekly(crack[["Crack_Spread_321"]]), how="left")
-master = master.join(align_wk(cftc[["Net_Spec_Chg"]]), how="left")
-master = master.join(to_weekly(gpr[["GPR_Index"]]).resample("W-FRI").mean(), how="left")
-master = master.join(align_wk(refinery[["Refinery_Utilization_Pct"]]), how="left")
-master = master.join(fwd_fill(ip[["US_Industrial_Production"]]), how="left")
 master = master.join(to_weekly(brent[["Brent_Close"]]), how="left")
+master = master.join(to_weekly(natgas[["NatGas_Close"]]), how="left")
+master = master.join(to_weekly(copper[["Copper_Close"]]), how="left")
 
 # OPEC cut dummy
 opec_cut = pd.Series(0, index=weekly_idx, name="OPEC_Cut")
@@ -133,17 +129,13 @@ master["LogWTI"]         = np.log(master["WTI_Close"]  / master["WTI_Close"].shi
 master["LogSP500"]       = np.log(master["SP500_Close"] / master["SP500_Close"].shift(1))
 master["LogGold"]        = np.log(master["Gold_Close"]  / master["Gold_Close"].shift(1))
 master["LogOVX"]         = np.log(master["OVX_Close"]   / master["OVX_Close"].shift(1))
+master["LogNatGas"]      = np.log(master["NatGas_Close"] / master["NatGas_Close"].shift(1))
+master["LogCopper"]      = np.log(master["Copper_Close"] / master["Copper_Close"].shift(1))
 master["DeltaVIX"]       = master["VIX_Close"].diff()
 master["DeltaTsy"]       = master["UST_10Y_Yield"].diff()
 master["DeltaDXY"]       = master["DXY_Close"].diff()
-master["DeltaProd"]      = master["US_Crude_Production_kbbl_day"].diff()
-master["DeltaKilian"]    = master["Kilian_GREA"].diff()
 master["DeltaCrack"]     = master["Crack_Spread_321"].diff()
 master["DeltaBrentWTI"]  = master["Brent_WTI_Spread"].diff()
-master["DeltaRef"]       = master["Refinery_Utilization_Pct"].diff()
-master["DeltaIP"]        = master["US_Industrial_Production"].diff()
-master["DeltaCFTC"]      = master["Net_Spec_Chg"]
-master["LogGPR"]         = np.log(master["GPR_Index"] / master["GPR_Index"].shift(1))
 master.dropna(subset=["LogWTI"], inplace=True)
 
 N = len(master)
@@ -162,17 +154,50 @@ EXOG = [
     ("LogOVX",        "ΔLog OVX"),
     ("DeltaTsy",      "Δ10Y Treasury"),
     ("DeltaBrentWTI", "ΔBrent-WTI Spread"),
-    ("DeltaCFTC",     "ΔCFTC Net Spec"),
     ("LogGold",       "ΔLog Gold"),
     ("DeltaDXY",      "ΔDXY"),
-    ("Chg_Commercial_Inventories", "ΔComm. Inventory"),
     ("LogSP500",      "ΔLog S&P500"),
-    ("OPEC_Cut",      "OPEC Cut Dummy"),
-    ("LogGPR",        "ΔLog GPR"),
     ("DeltaVIX",      "ΔVIX"),
+    ("DeltaCrack",    "ΔCrack Spread"),
+    ("LogNatGas",     "ΔLog Nat Gas"),
+    ("LogCopper",     "ΔLog Copper"),
 ]
 exog_cols   = [e[0] for e in EXOG]
 exog_labels = [e[1] for e in EXOG]
+
+EXPECTED_SIGN = {
+    "LogOVX": -1,
+    "DeltaTsy": 1,
+    "DeltaBrentWTI": -1,
+    "LogGold": 1,
+    "DeltaDXY": -1,
+    "LogSP500": 1,
+    "DeltaVIX": -1,
+    "DeltaCrack": 1,
+    "LogNatGas": 1,
+    "LogCopper": 1,
+}
+
+EXPECTED_SIGN_TEXT = {
+    "LogOVX": "−(OVX↑=risk-off shock)",
+    "DeltaTsy": "+(yield↑ can imply growth)",
+    "DeltaBrentWTI": "−(spread↑=WTI weak)",
+    "LogGold": "+(gold↑ often dollar weak)",
+    "DeltaDXY": "−(DXY↑→oil↓)",
+    "LogSP500": "+(equity↑=demand)",
+    "DeltaVIX": "−(VIX↑=risk-off)",
+    "DeltaCrack": "+(margin↑=crude demand)",
+    "LogNatGas": "+(energy complex spillover)",
+    "LogCopper": "+(growth proxy↑)",
+}
+
+def sig_stars(p):
+    return "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.10 else ""
+
+def sign_match(value, expected_direction):
+    if expected_direction is None or np.isclose(value, 0.0):
+        return "—"
+    return "✓" if np.sign(value) == expected_direction else "✗"
 
 def build_XY(df, cols):
     y    = df["LogWTI"].values.copy()
@@ -282,6 +307,7 @@ price_fc = np.zeros(N_te)
 price_fc[0] = last_p * np.exp(y_hat_te[0])
 for i in range(1, N_te): price_fc[i] = price_fc[i-1] * np.exp(y_hat_te[i])
 price_ac = test["WTI_Close"].values
+mae   = np.mean(np.abs(price_fc - price_ac))
 mape  = np.mean(np.abs((price_fc - price_ac)/price_ac))*100
 dstat = np.mean(np.sign(y_hat_te)==np.sign(y_te))*100
 rmse  = np.sqrt(np.mean((price_fc-price_ac)**2))
@@ -304,9 +330,9 @@ last_tsy    = master["UST_10Y_Yield"].iloc[-1]       # 1.895
 last_dxy    = master["DXY_Close"].iloc[-1]            # 96.74
 last_gold   = master["Gold_Close"].iloc[-1]           # 1514.5
 last_bwti   = master["Brent_WTI_Spread"].iloc[-1]    # 6.76
-last_cftc   = float(master["Net_Spec_Chg"].iloc[-1]) # last CFTC net spec chg
-last_comm   = float(master["Chg_Commercial_Inventories"].iloc[-1])
-last_gpr    = master["GPR_Index"].iloc[-1]
+last_crack  = master["Crack_Spread_321"].iloc[-1]
+last_natgas = master["NatGas_Close"].iloc[-1]
+last_copper = master["Copper_Close"].iloc[-1]
 
 # Current Apr 2026 values (from EIA March 2026 STEO + market data)
 curr_wti   = 100.0    # WTI spot ~$100 post-Hormuz spike
@@ -315,16 +341,15 @@ curr_tsy   = 4.35     # 10Y yield (current)
 curr_dxy   = 104.5    # DXY stronger dollar
 curr_gold  = 3050.0   # Gold near ATH
 curr_bwti  = 4.8      # Brent-WTI compressed under supply shock
-curr_cftc  = 60000    # Net spec longs surging on geopolitical risk
-curr_comm  = -8500    # Large commercial draw (EIA weekly draws)
-curr_gpr   = 280.0    # GPR elevated (US-Iran conflict)
 curr_vix   = 22.0
-curr_opec  = 1        # OPEC+ cuts still active
+curr_crack = max(last_crack * 1.15, last_crack + 3.0)
+curr_natgas = max(last_natgas * 1.20, last_natgas + 0.4)
+curr_copper = last_copper * 0.97
 
 print(f"    Calibration: WTI last data = ${last_wti:.2f} (Dec 2019)")
 print(f"    Current WTI  ≈ ${curr_wti:.2f}  OVX={curr_ovx}  VIX={curr_vix}")
 print(f"    DXY={curr_dxy}  10Y={curr_tsy}%  Gold=${curr_gold}")
-print(f"    GPR={curr_gpr} (conflict elevated)  CFTC net-spec={curr_cftc:,}")
+print(f"    Crack={curr_crack:.2f}  NatGas={curr_natgas:.2f}  Copper={curr_copper:.2f}")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # BLOCK 5 — THREE SCENARIO FORWARD FORECAST (12 weeks)
@@ -334,7 +359,7 @@ print("\n[5] Generating 3-scenario 12-week forecast from Apr 2026...")
 H = 26   # 26 weeks = ~6 months
 
 # ── Helper: build one-period exog vector from scenario assumptions ──
-def scenario_exog(wti_prev, scenario, week):
+def scenario_exog(scenario, week):
     """
     Returns a scalar ARIMAX contribution from exogenous variables
     given scenario assumptions for a given forecast week.
@@ -342,50 +367,52 @@ def scenario_exog(wti_prev, scenario, week):
     # Coefficients: const, AR1, AR2, then exog in EXOG order
     # We handle AR terms separately; here compute sum(beta_j * x_j)
     exog_betas = beta[3:]   # skip const, AR1, AR2
+    decay_26 = 1 - week / 26
 
     # Scenario-specific exogenous paths
     if scenario == "bull":
         # Hormuz fully blocked, prices surge; OVX spikes further
-        d_ovx      = 0.05  * max(0, 1 - week/8)   # OVX surges early weeks
-        d_tsy      = 0.03  * (1 - week/26)
-        d_bwti     = -0.15 * (1 - week/26)         # spread compresses
-        d_cftc     = 80000
-        d_gold     = 0.012
-        d_dxy      = -0.3
-        d_comm     = -10000
-        d_sp500    = -0.015
-        d_opec     = 1
-        d_gpr      = 0.08
-        d_vix      = 1.2
+        shocks = {
+            "LogOVX": 0.05 * max(0, 1 - week / 8),
+            "DeltaTsy": 0.03 * decay_26,
+            "DeltaBrentWTI": -0.15 * decay_26,
+            "LogGold": 0.012,
+            "DeltaDXY": -0.3,
+            "LogSP500": -0.015,
+            "DeltaVIX": 1.2,
+            "DeltaCrack": 0.35,
+            "LogNatGas": 0.020,
+            "LogCopper": -0.010,
+        }
     elif scenario == "bear":
         # Ceasefire / deal reached; supply restored
-        d_ovx      = -0.03 * (1 + week/10)
-        d_tsy      = -0.02
-        d_bwti     = 0.10
-        d_cftc     = -40000
-        d_gold     = -0.008
-        d_dxy      = 0.4
-        d_comm     = 3000
-        d_sp500    = 0.012
-        d_opec     = 0
-        d_gpr      = -0.06
-        d_vix      = -0.8
+        shocks = {
+            "LogOVX": -0.03 * (1 + week / 10),
+            "DeltaTsy": -0.02,
+            "DeltaBrentWTI": 0.10,
+            "LogGold": -0.008,
+            "DeltaDXY": 0.4,
+            "LogSP500": 0.012,
+            "DeltaVIX": -0.8,
+            "DeltaCrack": -0.25,
+            "LogNatGas": -0.012,
+            "LogCopper": 0.008,
+        }
     else:  # base
-        d_ovx      = 0.01 * max(0, 1 - week/12)
-        d_tsy      = 0.005
-        d_bwti     = -0.05
-        d_cftc     = 15000
-        d_gold     = 0.004
-        d_dxy      = 0.1
-        d_comm     = -4000
-        d_sp500    = 0.003
-        d_opec     = 1
-        d_gpr      = 0.02
-        d_vix      = 0.2
+        shocks = {
+            "LogOVX": 0.01 * max(0, 1 - week / 12),
+            "DeltaTsy": 0.005,
+            "DeltaBrentWTI": -0.05,
+            "LogGold": 0.004,
+            "DeltaDXY": 0.1,
+            "LogSP500": 0.003,
+            "DeltaVIX": 0.2,
+            "DeltaCrack": 0.10,
+            "LogNatGas": 0.006,
+            "LogCopper": 0.002,
+        }
 
-    x_vec = np.array([d_ovx, d_tsy, d_bwti, d_cftc,
-                      d_gold, d_dxy, d_comm, d_sp500,
-                      d_opec, d_gpr, d_vix])
+    x_vec = np.array([shocks.get(col, 0.0) for col in exog_cols])
     return float(exog_betas @ x_vec)
 
 def run_scenario(scenario_name, start_price):
@@ -393,6 +420,7 @@ def run_scenario(scenario_name, start_price):
     returns_h = []
     h_t       = h_last
     vols      = []
+    h_path    = []
 
     prev1 = np.log(start_price / master["WTI_Close"].iloc[-2])
     prev2 = np.log(master["WTI_Close"].iloc[-2] / master["WTI_Close"].iloc[-3])
@@ -400,12 +428,13 @@ def run_scenario(scenario_name, start_price):
     for w in range(H):
         # ARIMAX mean forecast
         mu_fc = beta[0] + beta[1]*prev1 + beta[2]*prev2
-        mu_fc += scenario_exog(prices[-1], scenario_name, w)
+        mu_fc += scenario_exog(scenario_name, w)
 
         # GARCH variance forecast (converges to long-run)
         h_t   = omega_g + (alpha_g + beta_g)*h_t
         sigma = np.sqrt(h_t)
         vols.append(sigma * np.sqrt(52) * 100)   # annualised
+        h_path.append(h_t)
 
         returns_h.append(mu_fc)
         new_price = prices[-1] * np.exp(mu_fc)
@@ -414,8 +443,9 @@ def run_scenario(scenario_name, start_price):
 
     # Confidence bands (GARCH-informed)
     lp     = np.log(start_price) + np.cumsum(returns_h)
-    ci95_w = np.array([np.sqrt(h_t * (i+1)) * 1.96 for i in range(H)])
-    ci68_w = ci95_w * (1.0/1.96)
+    cum_var = np.cumsum(h_path)
+    ci95_w = 1.96 * np.sqrt(cum_var)
+    ci68_w = np.sqrt(cum_var)
     hi95   = np.exp(lp + ci95_w)
     lo95   = np.exp(lp - ci95_w)
     hi68   = np.exp(lp + ci68_w)
@@ -679,26 +709,25 @@ ax6.axvline(np.log(curr_ovx/last_ovx)*0.1, color=C["red"],
 ax6.set_xlabel("ΔLog OVX (weekly)", fontsize=10)
 ax6.set_ylabel("WTI log return", fontsize=10)
 ax6.set_title(f"OVX vs WTI Returns  |  r = {master['LogOVX'].corr(master['LogWTI']):.3f}\n"
-              f"Top predictor (|t|=4.48***) — oil fear drives price",
+              f"Top predictor: {vi[0][0]} (|t|={vi[0][1]:.2f}{sig_stars(vi[0][2])})",
               fontsize=11, fontweight="bold", pad=6)
 ax6.grid(alpha=0.20); ax6.legend(fontsize=9)
 
-# EIA draws vs WTI
+# Crack spread vs WTI
 ax7 = fig.add_subplot(gs[4, 1])
 ax7.set_facecolor(C["white"])
-comm_chg = master["Chg_Commercial_Inventories"].dropna()
-wti_r2   = master["LogWTI"].dropna()
-common2  = comm_chg.index.intersection(wti_r2.index)
-ax7.bar(common2, comm_chg[common2]/1000, color=[C["red"] if v<0 else C["blue"]
-        for v in comm_chg[common2]], alpha=0.55, width=5)
+crack_w = master["Crack_Spread_321"].dropna()
+common2 = crack_w.index.intersection(master["WTI_Close"].dropna().index)
+ax7.fill_between(common2, 0, crack_w[common2], color=C["orange"], alpha=0.22)
+ax7.plot(common2, crack_w[common2], color=C["orange"], lw=1.2)
 ax2b = ax7.twinx()
-ax2b.plot(master.index, master["WTI_Close"], color=C["navy"],
+ax2b.plot(common2, master.loc[common2, "WTI_Close"], color=C["navy"],
           lw=0.9, alpha=0.7)
 ax7.set_xlabel("Date", fontsize=10)
-ax7.set_ylabel("Inventory change (M bbl)", fontsize=10, color=C["red"])
+ax7.set_ylabel("3-2-1 crack spread (USD)", fontsize=10, color=C["orange"])
 ax2b.set_ylabel("WTI Close (USD)", fontsize=10, color=C["navy"])
-ax7.set_title("EIA Inventory Draw/Build vs WTI Price\n"
-              "Red bars = draws (bullish) | Blue bars = builds (bearish)",
+ax7.set_title("Crack Spread vs WTI Price\n"
+              "Higher refinery margins often coincide with stronger crude demand",
               fontsize=11, fontweight="bold", pad=6)
 ax7.grid(alpha=0.15)
 
@@ -719,142 +748,130 @@ print(f"    Dashboard → {dash_path}")
 print("\n[8] Writing Excel results report...")
 
 excel_path = f"{OUT}/wti_surge_model_results.xlsx"
-with pd.ExcelWriter(excel_path, engine="xlsxwriter") as wr:
-    wb_x = wr.book
+excel_engine = "xlsxwriter" if importlib.util.find_spec("xlsxwriter") else "openpyxl"
 
-    # Formats
-    hdr  = wb_x.add_format({"bold":True,"bg_color":"#0D2137","font_color":"#FFFFFF","border":1,"align":"center"})
-    num2 = wb_x.add_format({"num_format":"0.00"})
-    num4 = wb_x.add_format({"num_format":"0.0000"})
-    pct  = wb_x.add_format({"num_format":"0.00%"})
-    bold = wb_x.add_format({"bold":True})
-    red  = wb_x.add_format({"bold":True,"font_color":"#C62828"})
-    grn  = wb_x.add_format({"bold":True,"font_color":"#2E7D32"})
-    ylw  = wb_x.add_format({"bold":True,"font_color":"#E65100"})
+rows = [
+    ["ARIMAX-GARCH OIL SURGE MODEL","","","",""],
+    ["","","","",""],
+    ["Sample period","2010-01-15 → 2019-12-27","","",""],
+    ["Frequency","Weekly (Friday close)","","",""],
+    ["Train / Test","70% / 30%  (2010-2016 / 2017-2019)","","",""],
+    ["Observations (total)", N,"","",""],
+    ["Train weeks", N_tr,"","",""],
+    ["Test weeks", N_te,"","",""],
+    ["","","","",""],
+    ["ARIMAX FIT","","","",""],
+    ["R²", f"{r2:.4f}","","",""],
+    ["Adj. R²", f"{adj_r2:.4f}","","",""],
+    ["AIC", f"{aic:.1f}","","",""],
+    ["BIC", f"{bic:.1f}","","",""],
+    ["Residual σ (weekly)", f"{np.std(resid_tr)*100:.4f}%","","",""],
+    ["Residual σ (annual)", f"{np.std(resid_tr)*np.sqrt(52)*100:.2f}%","","",""],
+    ["","","","",""],
+    ["TEST ACCURACY","","","",""],
+    ["MAE", f"${mae:.2f}","","",""],
+    ["MAPE", f"{mape:.2f}%","","",""],
+    ["Directional Accuracy", f"{dstat:.1f}%","","",""],
+    ["Theil's U", f"{theilu:.3f}","","",""],
+    ["","","","",""],
+    ["GARCH(1,1)","","","",""],
+    ["ω (omega)", f"{omega_g:.8f}","","",""],
+    ["α (alpha)", f"{alpha_g:.4f}","","",""],
+    ["β (beta)", f"{beta_g:.4f}","","",""],
+    ["Persistence α+β", f"{persist:.4f}","","",""],
+    ["Shock half-life (weeks)", f"{half_life:.1f}","","",""],
+    ["Long-run vol (annual)", f"{np.sqrt(uncond_var)*np.sqrt(52)*100:.2f}%","","",""],
+]
+model_summary_df = pd.DataFrame(rows)
 
-    # ── Tab 1: Model summary ──
-    ws = wb_x.add_worksheet("Model_Summary")
-    wr.sheets["Model_Summary"] = ws
-    ws.set_column("A:A", 30); ws.set_column("B:F", 16)
-    rows = [
-        ["ARIMAX-GARCH OIL SURGE MODEL","","","",""],
-        ["","","","",""],
-        ["Sample period","2010-01-15 → 2019-12-27","","",""],
-        ["Frequency","Weekly (Friday close)","","",""],
-        ["Train / Test","70% / 30%  (2010-2016 / 2017-2019)","","",""],
-        ["Observations (total)", N,"","",""],
-        ["Train weeks", N_tr,"","",""],
-        ["Test weeks", N_te,"","",""],
-        ["","","","",""],
-        ["ARIMAX FIT","","","",""],
-        ["R²", f"{r2:.4f}","","",""],
-        ["Adj. R²", f"{adj_r2:.4f}","","",""],
-        ["AIC", f"{aic:.1f}","","",""],
-        ["BIC", f"{bic:.1f}","","",""],
-        ["Residual σ (weekly)", f"{np.std(resid_tr)*100:.4f}%","","",""],
-        ["Residual σ (annual)", f"{np.std(resid_tr)*np.sqrt(52)*100:.2f}%","","",""],
-        ["","","","",""],
-        ["TEST ACCURACY","","","",""],
-        ["MAE", f"${mape:.2f}","","",""],
-        ["MAPE", f"{mape:.2f}%","","",""],
-        ["Directional Accuracy", f"{dstat:.1f}%","","",""],
-        ["Theil's U", f"{theilu:.3f}","","",""],
-        ["","","","",""],
-        ["GARCH(1,1)","","","",""],
-        ["ω (omega)", f"{omega_g:.8f}","","",""],
-        ["α (alpha)", f"{alpha_g:.4f}","","",""],
-        ["β (beta)", f"{beta_g:.4f}","","",""],
-        ["Persistence α+β", f"{persist:.4f}","","",""],
-        ["Shock half-life (weeks)", f"{half_life:.1f}","","",""],
-        ["Long-run vol (annual)", f"{np.sqrt(uncond_var)*np.sqrt(52)*100:.2f}%","","",""],
-    ]
-    for r_i, row in enumerate(rows):
-        for c_i, val in enumerate(row):
-            ws.write(r_i, c_i, val, bold if c_i==0 and val else None)
+coef_df = pd.DataFrame({
+    "Variable":   col_names,
+    "Coefficient":beta,
+    "HAC_Std_Err":se_hac,
+    "t_stat_HAC": t_hac,
+    "p_value_HAC":p_hac,
+    "Significance":[sig_stars(p) or "—" for p in p_hac],
+    "Expected_Sign":["—","—","—"] + [EXPECTED_SIGN_TEXT.get(col, "—") for col in exog_cols],
+    "Sign_Correct": ["—","—","—"] + [
+        sign_match(beta[i + 3], EXPECTED_SIGN.get(col))
+        for i, col in enumerate(exog_cols)
+    ],
+})
 
-    # ── Tab 2: ARIMAX coefficients ──
-    coef_df = pd.DataFrame({
-        "Variable":   col_names,
-        "Coefficient":beta,
-        "HAC_Std_Err":se_hac,
-        "t_stat_HAC": t_hac,
-        "p_value_HAC":p_hac,
-        "Significance":["***" if p<0.01 else "**" if p<0.05 else "*" if p<0.10 else "—"
-                        for p in p_hac],
-        "Expected_Sign":["—","—","—",
-                         "−(OVX↑→price↓)","+(yield↑=growth)","−(spread↑=WTI weak)",
-                         "+(spec longs→price↑)","+(gold=dollar weak→oil↑)",
-                         "−(DXY↑→oil↓)","—","+(equity↑=demand)",
-                         "+(cut=supply↓→price↑)","+(GPR↑=risk↑→price↑)","−(VIX↑=risk off)"],
-        "Sign_Correct": ["—","—","—",
-                         "✓" if beta[3]<0 else "✗",
-                         "✓" if beta[4]>0 else "✗",
-                         "✓" if beta[5]<0 else "✗",
-                         "✓" if beta[6]>0 else "✗",
-                         "✓" if beta[7]>0 else "✗",
-                         "✓" if beta[8]<0 else "✗",
-                         "—",
-                         "✓" if beta[10]>0 else "✗",
-                         "✓" if beta[11]>0 else "✗",
-                         "✓" if beta[12]>0 else "✗",
-                         "✓" if beta[13]<0 else "✗"],
+fc_rows = []
+for w in range(H):
+    fc_rows.append({
+        "Week":          w+1,
+        "Date":          fc_dates[w].strftime("%Y-%m-%d"),
+        "Base_Price":    round(base["prices"][w],2),
+        "Base_Lo95":     round(base["lo95"][w],2),
+        "Base_Hi95":     round(base["hi95"][w],2),
+        "Base_Vol_Ann":  round(base["vols"][w],2),
+        "Bull_Price":    round(bull["prices"][w],2),
+        "Bull_Lo95":     round(bull["lo95"][w],2),
+        "Bull_Hi95":     round(bull["hi95"][w],2),
+        "Bear_Price":    round(bear["prices"][w],2),
+        "Bear_Lo95":     round(bear["lo95"][w],2),
+        "Bear_Hi95":     round(bear["hi95"][w],2),
     })
+fc_df = pd.DataFrame(fc_rows)
+
+assump = pd.DataFrame([
+    ["Base","Partial Hormuz disruption; OPEC+ holds cuts",
+     "OVX stays elevated ~40-50","DXY modest strength","Gradual diplomatic progress",
+     f"Wk12: ${base['prices'][11]:.0f}  Wk26: ${base['prices'][-1]:.0f}"],
+    ["Bull","Full Hormuz blockade; Iranian production halted",
+     "OVX spikes to 60-80","DXY weakens on risk-off","No deal; escalation continues",
+     f"Wk12: ${bull['prices'][11]:.0f}  Wk26: ${bull['prices'][-1]:.0f}"],
+    ["Bear","Ceasefire reached; Hormuz reopens",
+     "OVX collapses to 25-30","OPEC+ eases cuts","Supply restored within weeks",
+     f"Wk12: ${bear['prices'][11]:.0f}  Wk26: ${bear['prices'][-1]:.0f}"],
+], columns=["Scenario","Geopolitical Driver","OVX Path",
+            "DXY Path","Resolution","WTI Forecast"])
+
+with pd.ExcelWriter(excel_path, engine=excel_engine) as wr:
+    model_summary_df.to_excel(wr, sheet_name="Model_Summary", index=False, header=False)
     coef_df.to_excel(wr, sheet_name="ARIMAX_Coefficients", index=False)
-    ws2 = wr.sheets["ARIMAX_Coefficients"]
-    ws2.set_column("A:A",26); ws2.set_column("B:H",16)
-    for c_i, col in enumerate(coef_df.columns):
-        ws2.write(0, c_i, col, hdr)
-
-    # ── Tab 3: Scenario forecasts ──
-    fc_rows = []
-    for w in range(H):
-        fc_rows.append({
-            "Week":          w+1,
-            "Date":          fc_dates[w].strftime("%Y-%m-%d"),
-            "Base_Price":    round(base["prices"][w],2),
-            "Base_Lo95":     round(base["lo95"][w],2),
-            "Base_Hi95":     round(base["hi95"][w],2),
-            "Base_Vol_Ann":  round(base["vols"][w],2),
-            "Bull_Price":    round(bull["prices"][w],2),
-            "Bull_Lo95":     round(bull["lo95"][w],2),
-            "Bull_Hi95":     round(bull["hi95"][w],2),
-            "Bear_Price":    round(bear["prices"][w],2),
-            "Bear_Lo95":     round(bear["lo95"][w],2),
-            "Bear_Hi95":     round(bear["hi95"][w],2),
-        })
-    fc_df = pd.DataFrame(fc_rows)
     fc_df.to_excel(wr, sheet_name="Scenario_Forecasts", index=False)
-    ws3 = wr.sheets["Scenario_Forecasts"]
-    ws3.set_column("A:B",10); ws3.set_column("C:M",13)
-    for c_i, col in enumerate(fc_df.columns):
-        ws3.write(0, c_i, col, hdr)
-
-    # ── Tab 4: Scenario assumptions ──
-    assump = pd.DataFrame([
-        ["Base","Partial Hormuz disruption; OPEC+ holds cuts",
-         "OVX stays elevated ~40-50","DXY modest strength","Gradual diplomatic progress",
-         f"Wk12: ${base['prices'][11]:.0f}  Wk26: ${base['prices'][-1]:.0f}"],
-        ["Bull","Full Hormuz blockade; Iranian production halted",
-         "OVX spikes to 60-80","DXY weakens on risk-off","No deal; escalation continues",
-         f"Wk12: ${bull['prices'][11]:.0f}  Wk26: ${bull['prices'][-1]:.0f}"],
-        ["Bear","Ceasefire reached; Hormuz reopens",
-         "OVX collapses to 25-30","OPEC+ eases cuts","Supply restored within weeks",
-         f"Wk12: ${bear['prices'][11]:.0f}  Wk26: ${bear['prices'][-1]:.0f}"],
-    ], columns=["Scenario","Geopolitical Driver","OVX Path",
-                "DXY Path","Resolution","WTI Forecast"])
     assump.to_excel(wr, sheet_name="Scenario_Assumptions", index=False)
-    ws4 = wr.sheets["Scenario_Assumptions"]
-    ws4.set_column("A:A",10); ws4.set_column("B:F",36)
-    for c_i, col in enumerate(assump.columns):
-        ws4.write(0, c_i, col, hdr)
-
-    # ── Tab 5: Master weekly data ──
     master.to_excel(wr, sheet_name="Master_Weekly_Data")
-    ws5 = wr.sheets["Master_Weekly_Data"]
-    ws5.set_column("A:A",14); ws5.set_column("B:Z",14)
-    ws5.freeze_panes(1,1)
 
-print(f"    Excel report → {excel_path}")
+    if excel_engine == "xlsxwriter":
+        wb_x = wr.book
+        hdr  = wb_x.add_format({"bold":True,"bg_color":"#0D2137","font_color":"#FFFFFF","border":1,"align":"center"})
+        bold = wb_x.add_format({"bold":True})
+
+        ws = wr.sheets["Model_Summary"]
+        ws.set_column("A:A", 30)
+        ws.set_column("B:F", 16)
+        for r_i, row in enumerate(rows):
+            for c_i, val in enumerate(row):
+                ws.write(r_i, c_i, val, bold if c_i == 0 and val else None)
+
+        ws2 = wr.sheets["ARIMAX_Coefficients"]
+        ws2.set_column("A:A", 26)
+        ws2.set_column("B:H", 16)
+        for c_i, col in enumerate(coef_df.columns):
+            ws2.write(0, c_i, col, hdr)
+
+        ws3 = wr.sheets["Scenario_Forecasts"]
+        ws3.set_column("A:B", 10)
+        ws3.set_column("C:M", 13)
+        for c_i, col in enumerate(fc_df.columns):
+            ws3.write(0, c_i, col, hdr)
+
+        ws4 = wr.sheets["Scenario_Assumptions"]
+        ws4.set_column("A:A", 10)
+        ws4.set_column("B:F", 36)
+        for c_i, col in enumerate(assump.columns):
+            ws4.write(0, c_i, col, hdr)
+
+        ws5 = wr.sheets["Master_Weekly_Data"]
+        ws5.set_column("A:A", 14)
+        ws5.set_column("B:Z", 14)
+        ws5.freeze_panes(1, 1)
+
+print(f"    Excel report ({excel_engine}) → {excel_path}")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # BLOCK 9 — PRINT FINAL SUMMARY
@@ -875,8 +892,11 @@ print(f"""
   TOP SIGNIFICANT VARIABLES (HAC robust, real data):
 """)
 for nm, ta, pv, coef in vi[:6]:
-    sig = "***" if pv<0.01 else "**" if pv<0.05 else "*"
+    sig = sig_stars(pv) or "—"
     print(f"    {'★' if pv<0.01 else '·'} {nm:<26}  β={coef:+.5f}  |t|={ta:.2f}  {sig}")
+
+top_name, top_t, top_p, top_beta = vi[0]
+top_direction = "positive" if top_beta > 0 else "negative"
 
 print(f"""
   OIL SURGE SCENARIO FORECAST (Apr → Oct 2026):
@@ -887,9 +907,7 @@ print(f"""
   BASE  (Partial disruption): Wk4 ${base['prices'][3]:.0f} → Wk12 ${base['prices'][11]:.0f} → Wk26 ${base['prices'][-1]:.0f}
   BEAR  (Ceasefire deal): Wk4 ${bear['prices'][3]:.0f}  → Wk12 ${bear['prices'][11]:.0f}  → Wk26 ${bear['prices'][-1]:.0f}
 
-  Key driver of surge: OVX (oil fear index) is the #1 predictor
-  with coefficient −0.10 (t=−4.48***): a 1% rise in OVX implies
-  ~−0.10% weekly WTI return, but in a supply-shock regime the
-  OVX spike PRECEDES a price surge as markets price scarcity.
+  Strongest driver in this reduced-data specification: {top_name}
+  with a {top_direction} coefficient of {top_beta:+.4f} (|t|={top_t:.2f}{sig_stars(top_p)}).
 {'='*70}
 """)

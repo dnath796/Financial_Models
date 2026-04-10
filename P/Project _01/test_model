@@ -1,0 +1,332 @@
+import os
+import warnings
+
+import numpy as np
+import pandas as pd
+from scipy import stats
+from scipy.linalg import lstsq
+
+warnings.filterwarnings("ignore")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PATH = os.path.join(BASE_DIR, "crude_oil_data_v2.xlsx")
+OUT_DIR = os.path.join(BASE_DIR, "outputs")
+OUT_PATH = os.path.join(OUT_DIR, "regression_input_data.xlsx")
+TRAIN_END = "2016-12-31"
+ALPHA = 0.05
+EXOG = [
+    ("LogOVX", "Delta Log OVX"),
+    ("DeltaTsy", "Delta 10Y Treasury"),
+    ("DeltaBrentWTI", "Delta Brent-WTI Spread"),
+    ("LogGold", "Delta Log Gold"),
+    ("DeltaDXY", "Delta DXY"),
+    ("LogSP500", "Delta Log SP500"),
+    ("DeltaVIX", "Delta VIX"),
+    ("DeltaCrack", "Delta Crack Spread"),
+    ("LogNatGas", "Delta Log Nat Gas"),
+    ("LogCopper", "Delta Log Copper"),
+]
+
+
+def load_sheet(sheet_name, date_col=0):
+    df = pd.read_excel(PATH, sheet_name=sheet_name, parse_dates=[date_col])
+    df.columns = [str(col) for col in df.columns]
+    date_column = df.columns[date_col]
+    df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
+    return df.dropna(subset=[date_column]).set_index(date_column)
+
+
+def load_required_sheet(sheet_name, required_cols):
+    df = load_sheet(sheet_name)
+    missing_cols = [col for col in required_cols if col not in df.columns]
+    if missing_cols:
+        raise ValueError(f"Sheet '{sheet_name}' is missing columns: {missing_cols}")
+    return df
+
+
+def build_master():
+    print("\n[1] Loading real data...")
+
+    wti = load_required_sheet("WTI_Price", ["WTI_Close"])
+    vix = load_required_sheet("VIX", ["VIX_Close"])
+    sp500 = load_required_sheet("SP500", ["SP500_Close"])
+    dxy = load_required_sheet("DXY", ["DXY_Close"])
+    tsy = load_required_sheet("Treasury_10Y", ["UST_10Y_Yield"])
+    ovx = load_required_sheet("OVX", ["OVX_Close"])
+    gold = load_required_sheet("Gold", ["Gold_Close"])
+    brent_wti = load_required_sheet("Brent_WTI_Spread", ["Brent_WTI_Spread"])
+    crack = load_required_sheet("Crack_Spread", ["Crack_Spread_321"])
+    brent = load_required_sheet("Brent", ["Brent_Close"])
+    natgas = load_required_sheet("NatGas_HenryHub", ["NatGas_Close"])
+    copper = load_required_sheet("Copper", ["Copper_Close"])
+
+    weekly_idx = pd.date_range("2010-01-08", "2019-12-27", freq="W-FRI")
+
+    def to_weekly(df):
+        return df.resample("W-FRI").last()
+
+    master = pd.DataFrame(index=weekly_idx)
+    master = master.join(to_weekly(wti[["WTI_Close"]]), how="left")
+    master = master.join(to_weekly(vix[["VIX_Close"]]), how="left")
+    master = master.join(to_weekly(sp500[["SP500_Close"]]), how="left")
+    master = master.join(to_weekly(dxy[["DXY_Close"]]), how="left")
+    master = master.join(to_weekly(tsy[["UST_10Y_Yield"]]), how="left")
+    master = master.join(to_weekly(ovx[["OVX_Close"]]), how="left")
+    master = master.join(to_weekly(gold[["Gold_Close"]]), how="left")
+    master = master.join(to_weekly(brent_wti[["Brent_WTI_Spread"]]), how="left")
+    master = master.join(to_weekly(crack[["Crack_Spread_321"]]), how="left")
+    master = master.join(to_weekly(brent[["Brent_Close"]]), how="left")
+    master = master.join(to_weekly(natgas[["NatGas_Close"]]), how="left")
+    master = master.join(to_weekly(copper[["Copper_Close"]]), how="left")
+
+    opec_cut = pd.Series(0, index=weekly_idx, name="OPEC_Cut")
+    for current_date in weekly_idx:
+        date_text = str(current_date.date())
+        if ("2011-11-01" <= date_text <= "2014-06-30") or (
+            "2016-12-01" <= date_text <= "2019-12-31"
+        ):
+            opec_cut[current_date] = 1
+    master = master.join(opec_cut.to_frame(), how="left")
+
+    master.ffill(limit=2, inplace=True)
+    master.dropna(subset=["WTI_Close"], inplace=True)
+
+    master["LogWTI"] = np.log(master["WTI_Close"] / master["WTI_Close"].shift(1))
+    master["LogSP500"] = np.log(master["SP500_Close"] / master["SP500_Close"].shift(1))
+    master["LogGold"] = np.log(master["Gold_Close"] / master["Gold_Close"].shift(1))
+    master["LogOVX"] = np.log(master["OVX_Close"] / master["OVX_Close"].shift(1))
+    master["LogNatGas"] = np.log(master["NatGas_Close"] / master["NatGas_Close"].shift(1))
+    master["LogCopper"] = np.log(master["Copper_Close"] / master["Copper_Close"].shift(1))
+    master["DeltaVIX"] = master["VIX_Close"].diff()
+    master["DeltaTsy"] = master["UST_10Y_Yield"].diff()
+    master["DeltaDXY"] = master["DXY_Close"].diff()
+    master["DeltaCrack"] = master["Crack_Spread_321"].diff()
+    master["DeltaBrentWTI"] = master["Brent_WTI_Spread"].diff()
+    master.dropna(subset=["LogWTI"], inplace=True)
+
+    return master
+
+
+def build_xy(df, columns):
+    y_values = df["LogWTI"].to_numpy(copy=True)
+    lag1 = np.roll(y_values, 1)
+    lag2 = np.roll(y_values, 2)
+    lag1[0] = 0.0
+    lag2[0] = 0.0
+    lag2[1] = 0.0
+
+    exog_values = []
+    for column in columns:
+        values = df[column].ffill().fillna(0.0).to_numpy()
+        exog_values.append(values)
+
+    x_values = np.column_stack([np.ones(len(y_values)), lag1, lag2, *exog_values])
+    return x_values, y_values
+
+
+def newey_west_vcov(x_values, residuals, xtx_inv, lags=4):
+    rows, columns = x_values.shape
+    cov_sum = np.zeros((columns, columns))
+
+    for idx in range(rows):
+        cov_sum += residuals[idx] ** 2 * np.outer(x_values[idx], x_values[idx])
+
+    for lag in range(1, lags + 1):
+        weight = 1.0 - lag / (lags + 1)
+        lag_sum = np.zeros((columns, columns))
+        for idx in range(lag, rows):
+            lag_sum += residuals[idx] * residuals[idx - lag] * np.outer(
+                x_values[idx], x_values[idx - lag]
+            )
+        cov_sum += weight * (lag_sum + lag_sum.T)
+
+    return xtx_inv @ cov_sum @ xtx_inv
+
+
+def sig_stars(p_value):
+    if p_value < 0.01:
+        return "***"
+    if p_value < 0.05:
+        return "**"
+    if p_value < 0.10:
+        return "*"
+    return "-"
+
+
+def build_hypothesis_table(names, beta, se_hac, t_hac, p_hac, df_resid, alpha=ALPHA):
+    t_crit = stats.t.ppf(1 - alpha / 2, df=df_resid)
+    ci_low = beta - t_crit * se_hac
+    ci_high = beta + t_crit * se_hac
+
+    rows = []
+    for name, coef, se_val, t_val, p_val, low, high in zip(
+        names, beta, se_hac, t_hac, p_hac, ci_low, ci_high
+    ):
+        rows.append(
+            {
+                "Variable": name,
+                "Null Hypothesis": "Coefficient = 0",
+                "Alternative Hypothesis": "Coefficient != 0",
+                "Coefficient": coef,
+                "HAC Std. Error": se_val,
+                "t Statistic": t_val,
+                "p Value": p_val,
+                "Alpha": alpha,
+                "Reject H0": "Yes" if p_val < alpha else "No",
+                "Significance": sig_stars(p_val),
+                "95% CI Low": low,
+                "95% CI High": high,
+            }
+        )
+
+    return pd.DataFrame(rows)
+
+
+def export_results(master, metrics, hypothesis_df):
+    os.makedirs(OUT_DIR, exist_ok=True)
+
+    export_columns = [
+        "WTI_Close",
+        "LogWTI",
+        "LogOVX",
+        "DeltaTsy",
+        "DeltaBrentWTI",
+        "LogGold",
+        "DeltaDXY",
+        "LogSP500",
+        "DeltaVIX",
+        "DeltaCrack",
+        "LogNatGas",
+        "LogCopper",
+    ]
+    export_df = master[export_columns].copy()
+    export_df.index.name = "Date"
+    summary_df = export_df.agg(["count", "mean", "std", "min", "max"]).T
+    summary_df.index.name = "Variable"
+
+    model_summary_df = pd.DataFrame(
+        [
+            ("Total observations", metrics["n_total"]),
+            ("Train observations", metrics["n_train"]),
+            ("Test observations", metrics["n_test"]),
+            ("R2", metrics["r2"]),
+            ("Adjusted R2", metrics["adj_r2"]),
+            ("AIC", metrics["aic"]),
+            ("BIC", metrics["bic"]),
+            ("MAE", metrics["mae"]),
+            ("MAPE", metrics["mape"]),
+            ("RMSE", metrics["rmse"]),
+            ("Directional accuracy", metrics["dir_acc"]),
+            ("Theil's U", metrics["theils_u"]),
+            ("Test residual std. dev.", metrics["test_resid_std"]),
+        ],
+        columns=["Metric", "Value"],
+    )
+
+    with pd.ExcelWriter(OUT_PATH, engine="openpyxl") as writer:
+        export_df.to_excel(writer, sheet_name="RegressionInputs")
+        summary_df.to_excel(writer, sheet_name="SummaryStats")
+        model_summary_df.to_excel(writer, sheet_name="ModelSummary", index=False)
+        hypothesis_df.to_excel(writer, sheet_name="HypothesisTests", index=False)
+
+    return OUT_PATH
+
+
+def main():
+    master = build_master()
+    train = master.loc[:TRAIN_END].copy()
+    test = master.loc["2017-01-01":].copy()
+
+    n_total = len(master)
+    n_train = len(train)
+    n_test = len(test)
+    print(f"    Master: {n_total} weekly obs | Train: {n_train} | Test: {n_test}")
+
+    print("\n[2] Fitting regression model...")
+    exog_cols = [item[0] for item in EXOG]
+    exog_labels = [item[1] for item in EXOG]
+
+    x_train, y_train = build_xy(train, exog_cols)
+    x_test, y_test = build_xy(test, exog_cols)
+
+    x_test[0, 1] = y_train[-1]
+    x_test[0, 2] = y_train[-2]
+    if len(x_test) > 1:
+        x_test[1, 2] = y_train[-1]
+
+    beta, *_ = lstsq(x_train, y_train)
+    train_resid = y_train - x_train @ beta
+    test_resid = y_test - x_test @ beta
+
+    n_obs, n_params = x_train.shape
+    xtx_inv = np.linalg.pinv(x_train.T @ x_train)
+    vcov_hac = newey_west_vcov(x_train, train_resid, xtx_inv, lags=4)
+    se_hac = np.sqrt(np.maximum(0.0, np.diag(vcov_hac)))
+    t_hac = np.divide(beta, se_hac, out=np.zeros_like(beta), where=se_hac > 0)
+    p_hac = 2 * (1 - stats.t.cdf(np.abs(t_hac), df=n_obs - n_params))
+
+    col_names = ["Constant", "AR(1)", "AR(2)"] + exog_labels
+    ss_res = train_resid @ train_resid
+    ss_tot = np.sum((y_train - y_train.mean()) ** 2)
+    r2 = 1 - ss_res / ss_tot
+    adj_r2 = 1 - (1 - r2) * (n_obs - 1) / (n_obs - n_params - 1)
+    aic = n_obs * np.log(ss_res / n_obs) + 2 * n_params
+    bic = n_obs * np.log(ss_res / n_obs) + n_params * np.log(n_obs)
+
+    print(f"    R2 = {r2:.4f} | Adj. R2 = {adj_r2:.4f} | AIC = {aic:.1f} | BIC = {bic:.1f}")
+    print(f"\n    {'Variable':<24} {'beta':>10} {'HAC SE':>9} {'t':>8} {'p':>9}  Sig")
+    print(f"    {'-' * 68}")
+    for name, coef, se_val, t_val, p_val in zip(col_names, beta, se_hac, t_hac, p_hac):
+        print(
+            f"    {name:<24} {coef:>+10.5f} {se_val:>9.5f} "
+            f"{t_val:>8.3f} {p_val:>9.4f}  {sig_stars(p_val)}"
+        )
+
+    y_hat_test = x_test @ beta
+    last_train_price = train["WTI_Close"].iloc[-1]
+    price_forecast = np.zeros(n_test)
+    price_forecast[0] = last_train_price * np.exp(y_hat_test[0])
+    for idx in range(1, n_test):
+        price_forecast[idx] = price_forecast[idx - 1] * np.exp(y_hat_test[idx])
+
+    price_actual = test["WTI_Close"].to_numpy()
+    mae = np.mean(np.abs(price_forecast - price_actual))
+    mape = np.mean(np.abs((price_forecast - price_actual) / price_actual)) * 100
+    rmse = np.sqrt(np.mean((price_forecast - price_actual) ** 2))
+    dir_acc = np.mean(np.sign(y_hat_test) == np.sign(y_test)) * 100
+    random_walk = np.full(n_test, last_train_price)
+    theils_u = rmse / np.sqrt(np.mean((random_walk - price_actual) ** 2))
+
+    print("\n[3] Test-set performance...")
+    print(f"    MAE = ${mae:.2f}")
+    print(f"    MAPE = {mape:.2f}%")
+    print(f"    RMSE = ${rmse:.2f}")
+    print(f"    Directional accuracy = {dir_acc:.1f}%")
+    print(f"    Theil's U = {theils_u:.3f}")
+    print(f"    Test residual std. dev. = {np.std(test_resid):.5f}")
+
+    hypothesis_df = build_hypothesis_table(
+        col_names, beta, se_hac, t_hac, p_hac, df_resid=n_obs - n_params
+    )
+    metrics = {
+        "n_total": n_total,
+        "n_train": n_train,
+        "n_test": n_test,
+        "r2": r2,
+        "adj_r2": adj_r2,
+        "aic": aic,
+        "bic": bic,
+        "mae": mae,
+        "mape": mape,
+        "rmse": rmse,
+        "dir_acc": dir_acc,
+        "theils_u": theils_u,
+        "test_resid_std": np.std(test_resid),
+    }
+    saved_path = export_results(master, metrics, hypothesis_df)
+    print(f"\n[4] Excel export...")
+    print(f"    Saved workbook = {saved_path}")
+
+
+if __name__ == "__main__":
+    main()
