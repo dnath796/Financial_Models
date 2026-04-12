@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 from scipy.linalg import lstsq
+import statsmodels.api as sm
+from statsmodels.stats.diagnostic import acorr_ljungbox
 
 warnings.filterwarnings("ignore")
 
@@ -182,7 +184,174 @@ def build_hypothesis_table(names, beta, se_hac, t_hac, p_hac, df_resid, alpha=AL
     return pd.DataFrame(rows)
 
 
-def export_results(master, metrics, hypothesis_df):
+def build_forecast_test_tables(
+    forecast_dates,
+    price_actual,
+    price_forecast,
+    random_walk,
+    actual_returns,
+    forecast_returns,
+    alpha=ALPHA,
+):
+    forecast_error = price_actual - price_forecast
+    benchmark_error = price_actual - random_walk
+
+    bias_test = stats.ttest_1samp(forecast_error, popmean=0.0)
+    sign_hits = int(np.sum(np.sign(actual_returns) == np.sign(forecast_returns)))
+    sign_test = stats.binomtest(sign_hits, len(actual_returns), p=0.5, alternative="greater")
+
+    mz_x = pd.DataFrame({"Forecast": price_forecast})
+    mz_x = sm.add_constant(mz_x, has_constant="add")
+    mz_model = sm.OLS(price_actual, mz_x).fit()
+    joint_test = mz_model.f_test("const = 0, Forecast = 1")
+
+    dm_rows = []
+    for label, power in [("Squared Error", 2), ("Absolute Error", 1)]:
+        model_loss = np.abs(forecast_error) ** power
+        benchmark_loss = np.abs(benchmark_error) ** power
+        loss_diff = model_loss - benchmark_loss
+        diff_mean = np.mean(loss_diff)
+        diff_var = np.var(loss_diff, ddof=1)
+        dm_stat = diff_mean / np.sqrt(diff_var / len(loss_diff)) if diff_var > 0 else np.nan
+        dm_pvalue = 2 * (1 - stats.norm.cdf(abs(dm_stat))) if np.isfinite(dm_stat) else np.nan
+        dm_rows.append(
+            {
+                "Test": f"Diebold-Mariano ({label})",
+                "Null Hypothesis": "Equal predictive accuracy vs random-walk benchmark",
+                "Alternative Hypothesis": "Forecast accuracy differs from benchmark",
+                "Statistic": dm_stat,
+                "p Value": dm_pvalue,
+                "Alpha": alpha,
+                "Reject H0": "Yes" if np.isfinite(dm_pvalue) and dm_pvalue < alpha else "No",
+                "Better Model": "ARIMAX"
+                if np.isfinite(diff_mean) and diff_mean < 0
+                else "Random Walk"
+                if np.isfinite(diff_mean) and diff_mean > 0
+                else "Tie",
+            }
+        )
+
+    lb_table = acorr_ljungbox(forecast_error, lags=[4, 8], return_df=True)
+    lb_rows = []
+    for lag, row in lb_table.iterrows():
+        lb_rows.append(
+            {
+                "Test": f"Ljung-Box Q({lag})",
+                "Null Hypothesis": "Forecast errors are not autocorrelated",
+                "Alternative Hypothesis": "Forecast errors are autocorrelated",
+                "Statistic": row["lb_stat"],
+                "p Value": row["lb_pvalue"],
+                "Alpha": alpha,
+                "Reject H0": "Yes" if row["lb_pvalue"] < alpha else "No",
+                "Better Model": "",
+            }
+        )
+
+    jb_test = stats.jarque_bera(forecast_error)
+    jb_row = {
+        "Test": "Jarque-Bera",
+        "Null Hypothesis": "Forecast errors are normally distributed",
+        "Alternative Hypothesis": "Forecast errors are not normally distributed",
+        "Statistic": jb_test.statistic,
+        "p Value": jb_test.pvalue,
+        "Alpha": alpha,
+        "Reject H0": "Yes" if jb_test.pvalue < alpha else "No",
+        "Better Model": "",
+    }
+
+    forecast_tests_df = pd.DataFrame(
+        [
+            {
+                "Test": "Bias t-test",
+                "Null Hypothesis": "Mean forecast error = 0",
+                "Alternative Hypothesis": "Mean forecast error != 0",
+                "Statistic": bias_test.statistic,
+                "p Value": bias_test.pvalue,
+                "Alpha": alpha,
+                "Reject H0": "Yes" if bias_test.pvalue < alpha else "No",
+                "Better Model": "",
+            },
+            {
+                "Test": "Mincer-Zarnowitz joint F-test",
+                "Null Hypothesis": "Intercept = 0 and slope = 1",
+                "Alternative Hypothesis": "Forecast is not unbiased and efficient",
+                "Statistic": float(joint_test.fvalue),
+                "p Value": float(joint_test.pvalue),
+                "Alpha": alpha,
+                "Reject H0": "Yes" if float(joint_test.pvalue) < alpha else "No",
+                "Better Model": "",
+            },
+            {
+                "Test": "Directional accuracy binomial test",
+                "Null Hypothesis": "Directional accuracy = 50%",
+                "Alternative Hypothesis": "Directional accuracy > 50%",
+                "Statistic": sign_hits,
+                "p Value": sign_test.pvalue,
+                "Alpha": alpha,
+                "Reject H0": "Yes" if sign_test.pvalue < alpha else "No",
+                "Better Model": "",
+            },
+            {
+                "Test": "Mincer-Zarnowitz intercept t-test",
+                "Null Hypothesis": "Intercept = 0",
+                "Alternative Hypothesis": "Intercept != 0",
+                "Statistic": mz_model.tvalues["const"],
+                "p Value": mz_model.pvalues["const"],
+                "Alpha": alpha,
+                "Reject H0": "Yes" if mz_model.pvalues["const"] < alpha else "No",
+                "Better Model": "",
+            },
+            {
+                "Test": "Mincer-Zarnowitz slope t-test",
+                "Null Hypothesis": "Slope = 1",
+                "Alternative Hypothesis": "Slope != 1",
+                "Statistic": (mz_model.params["Forecast"] - 1.0) / mz_model.bse["Forecast"],
+                "p Value": 2
+                * (1 - stats.t.cdf(abs((mz_model.params["Forecast"] - 1.0) / mz_model.bse["Forecast"]), df=int(mz_model.df_resid))),
+                "Alpha": alpha,
+                "Reject H0": "Yes"
+                if 2
+                * (1 - stats.t.cdf(abs((mz_model.params["Forecast"] - 1.0) / mz_model.bse["Forecast"]), df=int(mz_model.df_resid)))
+                < alpha
+                else "No",
+                "Better Model": "",
+            },
+            *dm_rows,
+            *lb_rows,
+            jb_row,
+        ]
+    )
+
+    forecast_series_df = pd.DataFrame(
+        {
+            "Date": forecast_dates,
+            "ActualPrice": price_actual,
+            "ForecastPrice": price_forecast,
+            "RandomWalkBenchmark": random_walk,
+            "ForecastError": forecast_error,
+            "BenchmarkError": benchmark_error,
+            "AbsForecastError": np.abs(forecast_error),
+            "AbsBenchmarkError": np.abs(benchmark_error),
+            "SquaredForecastError": forecast_error ** 2,
+            "SquaredBenchmarkError": benchmark_error ** 2,
+        }
+    )
+
+    calibration_df = pd.DataFrame(
+        [
+            ("MZ intercept", mz_model.params["const"]),
+            ("MZ intercept p-value", mz_model.pvalues["const"]),
+            ("MZ slope", mz_model.params["Forecast"]),
+            ("MZ slope p-value", mz_model.pvalues["Forecast"]),
+            ("MZ R-squared", mz_model.rsquared),
+        ],
+        columns=["Metric", "Value"],
+    )
+
+    return forecast_tests_df, forecast_series_df, calibration_df
+
+
+def export_results(master, metrics, hypothesis_df, forecast_tests_df, forecast_series_df, calibration_df):
     os.makedirs(OUT_DIR, exist_ok=True)
 
     export_columns = [
@@ -228,6 +397,9 @@ def export_results(master, metrics, hypothesis_df):
         summary_df.to_excel(writer, sheet_name="SummaryStats")
         model_summary_df.to_excel(writer, sheet_name="ModelSummary", index=False)
         hypothesis_df.to_excel(writer, sheet_name="HypothesisTests", index=False)
+        forecast_tests_df.to_excel(writer, sheet_name="ForecastTests", index=False)
+        forecast_series_df.to_excel(writer, sheet_name="ForecastSeries", index=False)
+        calibration_df.to_excel(writer, sheet_name="ForecastCalibration", index=False)
 
     return OUT_PATH
 
@@ -296,6 +468,14 @@ def main():
     dir_acc = np.mean(np.sign(y_hat_test) == np.sign(y_test)) * 100
     random_walk = np.full(n_test, last_train_price)
     theils_u = rmse / np.sqrt(np.mean((random_walk - price_actual) ** 2))
+    forecast_tests_df, forecast_series_df, calibration_df = build_forecast_test_tables(
+        test.index,
+        price_actual,
+        price_forecast,
+        random_walk,
+        y_test,
+        y_hat_test,
+    )
 
     print("\n[3] Test-set performance...")
     print(f"    MAE = ${mae:.2f}")
@@ -304,6 +484,12 @@ def main():
     print(f"    Directional accuracy = {dir_acc:.1f}%")
     print(f"    Theil's U = {theils_u:.3f}")
     print(f"    Test residual std. dev. = {np.std(test_resid):.5f}")
+    print("\n[4] Forecast diagnostic tests...")
+    for _, row in forecast_tests_df.iterrows():
+        print(
+            f"    {row['Test']}: stat={row['Statistic']:.4f} "
+            f"p={row['p Value']:.4f} reject_H0={row['Reject H0']}"
+        )
 
     hypothesis_df = build_hypothesis_table(
         col_names, beta, se_hac, t_hac, p_hac, df_resid=n_obs - n_params
@@ -323,8 +509,15 @@ def main():
         "theils_u": theils_u,
         "test_resid_std": np.std(test_resid),
     }
-    saved_path = export_results(master, metrics, hypothesis_df)
-    print(f"\n[4] Excel export...")
+    saved_path = export_results(
+        master,
+        metrics,
+        hypothesis_df,
+        forecast_tests_df,
+        forecast_series_df,
+        calibration_df,
+    )
+    print(f"\n[5] Excel export...")
     print(f"    Saved workbook = {saved_path}")
 
 
